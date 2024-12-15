@@ -7,6 +7,7 @@ from services.quirk_circuit_generator import QuantumLLM
 
 app = FastAPI()
 api_key = os.environ("GROQ_API_KEY")
+print(api_key)
 
 @app.get("/health")
 def app_health():
