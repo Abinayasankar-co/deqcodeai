@@ -47,9 +47,3 @@ class QuantmLLM:
         )
         return responses
         
-
-
-#Example Code
-quantum_verifier = QuantmLLM()
-resposnes = quantum_verifier.llm_request()
-print(resposnes)

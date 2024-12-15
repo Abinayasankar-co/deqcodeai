@@ -8,7 +8,7 @@ class QuirkCircuitGenerator:
             "H", "X", "Y", "Z", "S", "T", "CX", "CCX", "SWAP", "RX", "RY", "RZ",
             "Measure", "InputA", "InputB", "InputC"
         }
-        self.circuit = []  # Stores the circuit configuration
+        self.circuit = []  
         self.qubit_count = 0
 
     def add_qubits(self, count):
