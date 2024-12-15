@@ -1,4 +1,5 @@
 from fastapi import FastAPI
+from services.llm import QuantmLLM
 
 
 app = FastAPI()
@@ -10,4 +11,6 @@ def app_health():
 
 app.post("/design-circuit")
 def design_circuit():
-    pass
+    quantum_verifier = QuantmLLM()
+    resposnes = quantum_verifier.llm_request()
+    return {"Response":resposnes}

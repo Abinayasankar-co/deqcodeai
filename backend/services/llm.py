@@ -18,7 +18,7 @@ class QuantmLLM:
         },
         {
             "role": "user",
-            "content": """Provide a circiut gates for quantum circuit for generating random numbers.
+            "content":"""Provide a circiut gates for quantum circuit for generating random numbers.
              The output should only be in the json as mentioning the parameters and the gates.
              The keys of json are {
              "Parameters":[{
