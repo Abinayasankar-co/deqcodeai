@@ -17,4 +17,4 @@ class QuantumPrompt:
                 }}
                 Note : You should only provide the json in the Output no other explanations needed.
                 Always ensure that your json output Object format is correct which is of high importance
-"""
+            """
