@@ -19,9 +19,6 @@ class QuirkCircuitGenerator:
         self.qubit_count = count
 
     def validate_gate(self, gate):
-        """
-        Validates whether the gate is supported by Quirk.
-        """
         if gate not in self.supported_gates:
             raise ValueError(f"Gate '{gate}' is not supported by Quirk.")
 

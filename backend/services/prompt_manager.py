@@ -1,7 +1,7 @@
 class QuantumPrompt:
     @staticmethod
-    def get_prompt(parameters, gates):
-        return f"""Provide a circuit gates for quantum circuit for generating random numbers.
+    def get_prompt():
+        return """Provide a circuit gates for quantum circuit for generating random numbers.
                    The output should only be in the json as mentioning the parameters and the gates.
                    The keys of json are {{
                    "Parameters":[{{

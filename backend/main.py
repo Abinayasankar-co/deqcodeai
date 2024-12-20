@@ -1,13 +1,12 @@
 import os
 from fastapi import FastAPI
+from fastapi.exceptions import HTTPException
 from services.llm import QuantmLLM
 from services.algassertprod import QuirkCircuitGenerator
 from services.quirk_circuit_generator import QuantumLLM
 
-
 app = FastAPI()
-api_key = os.environ("GROQ_API_KEY")
-print(api_key)
+
 
 @app.get("/health")
 def app_health():
@@ -15,13 +14,16 @@ def app_health():
 
 app.post("/design-circuit")
 def design_circuit():
-    quantum_verifier = QuantmLLM()
-    resposnes = quantum_verifier.llm_request()
-    return {"Response":resposnes}
-
+    try:
+     quantum_verifier = QuantmLLM()
+     resposnes = quantum_verifier.llm_request()
+     return {"Response":resposnes}
+    except Exception as e:
+       return HTTPException(status_code=200,detail=f"{e}")
+    
 @app.post("/generate_circuit")
 async def generate_circuit(parameters: list, gates: list):
-    llm = QuantumLLM(api_key)
+    llm = QuantumLLM()
     response = llm.llm_request(parameters, gates)
     generator = QuirkCircuitGenerator()
     generator.add_qubits(3)
