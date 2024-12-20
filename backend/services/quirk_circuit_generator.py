@@ -61,6 +61,7 @@ class QuantumLLM:
              HumanMessage(content=user_input)
           ]
           response = self.quantum(messages, model="llama3-8b-8192", temperature=0.5, max_tokens=1024, top_p=1)
+          print(response)
           return response['text']
         except Exception as e:
             return HTTPException(status_code=500,detail=f"{e}")

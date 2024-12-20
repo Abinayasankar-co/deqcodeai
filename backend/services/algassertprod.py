@@ -4,18 +4,14 @@ import urllib.parse
 
 class QuirkCircuitGenerator:
     def __init__(self):
-        # Supported Quirk gates
         self.supported_gates = {
             "H", "X", "Y", "Z", "S", "T", "CX", "CCX", "SWAP", "RX", "RY", "RZ",
             "Measure", "InputA", "InputB", "InputC"
         }
-        self.circuit = []  
+        self.circuit = []
         self.qubit_count = 0
 
     def add_qubits(self, count):
-        """
-        Sets the number of qubits for the circuit.
-        """
         self.qubit_count = count
 
     def validate_gate(self, gate):
@@ -23,23 +19,10 @@ class QuirkCircuitGenerator:
             raise ValueError(f"Gate '{gate}' is not supported by Quirk.")
 
     def add_gate(self, gate, targets, controls=None, params=None):
-        """
-        Adds a gate to the circuit.
-
-        :param gate: The name of the gate (e.g., 'H', 'X', 'RZ').
-        :param targets: A list of target qubit indices.
-        :param controls: A list of control qubit indices, if any.
-        :param params: A list of parameters for the gate (e.g., angles for RX, RY, RZ).
-        """
-        # Validate gate
         self.validate_gate(gate)
-
-        # Validate qubit indices
         all_indices = (targets if targets else []) + (controls if controls else [])
         if any(index >= self.qubit_count for index in all_indices):
             raise ValueError("Target or control index out of range.")
-
-        # Add gate to the circuit
         gate_dict = {"id": gate, "targets": targets}
         if controls:
             gate_dict["controls"] = controls
@@ -48,38 +31,72 @@ class QuirkCircuitGenerator:
         self.circuit.append([gate_dict])
 
     def generate_json(self):
-        """
-        Generates the JSON configuration for Quirk.
-        """
         return json.dumps({"cols": self.circuit}, indent=2)
 
     def generate_quirk_url(self):
-        """
-        Generates a Quirk URL with the circuit encoded as a query parameter.
-        """
         quirk_data = {"cols": self.circuit}
-        encoded_data = urllib.parse.quote(json.dumps(quirk_data))
-        return f"https://algassert.com/quirk#circuit={encoded_data}"
+        data = json.dumps(quirk_data)
+        #encoded_data = urllib.parse.quote(json.dumps(quirk_data))
+        return f"https://algassert.com/quirk#circuit={data}"
+    
 
-# Example Usage
 if __name__ == "__main__":
-    # Initialize the generator
+    # Example input
+    input_data = {
+  'Parameters': [
+    {
+      'n_qubits': 1,
+      'num_samples': 1024
+    }
+  ],
+  'gates': [
+    {
+      'gate': 'H',
+      'qubit': 0
+    },
+    {
+      'gate': 'RZ',
+      'qubit': 0,
+      'params': [
+        0.5
+      ]
+    },
+    {
+      'gate': 'RX',
+      'qubit': 0,
+      'params': [
+        0.5
+      ]
+    },
+    {
+      'gate': 'H',
+      'qubit': 0
+    }
+  ],
+  'code': {
+    'import': 'from qiskit import QuantumCircuit, execute',
+    'qc': 'qc = QuantumCircuit(n_qubits)',
+    'qc_h': 'qc.h(0)',
+    'qc_rz': 'qc.rz(0.5, 0)',
+    'qc_rx': 'qc.rx(0.5, 0)',
+    'qc_h_again': 'qc.h(0)',
+    'job': 'job = execute(qc, shots=num_samples)'
+  }
+}
+
     generator = QuirkCircuitGenerator()
-    generator.add_qubits(3)  # Define 3 qubits
+    generator.add_qubits(input_data["Parameters"][0]["n_qubits"])
 
-    # Add gates to the circuit
-    try:
-        generator.add_gate("H", [0])                 # Hadamard gate on qubit 0
-        generator.add_gate("CX", [1], controls=[0]) # CNOT with control 0 and target 1
-        generator.add_gate("RZ", [2], params=[1.57]) # RZ rotation on qubit 2 with π/2
-    except ValueError as e:
-        print(f"Error: {e}")
+    for gate in input_data["gates"]:
+        generator.add_gate(
+            gate["gate"],
+            [gate["qubit"]],
+            params=gate.get("params")
+        )
 
-    # Generate JSON and Quirk URL
     quirk_json = generator.generate_json()
     quirk_url = generator.generate_quirk_url()
 
-    # Print results
     print("Quirk JSON:")
     print(quirk_json)
     print("\nQuirk URL:")

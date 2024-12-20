@@ -12,14 +12,14 @@ app = FastAPI()
 def app_health():
     return {"health":"DeqcodeAI"}
 
-app.post("/design-circuit")
+@app.post("/design-circuit")
 def design_circuit():
     try:
      quantum_verifier = QuantmLLM()
      resposnes = quantum_verifier.llm_request()
      return {"Response":resposnes}
     except Exception as e:
-       return HTTPException(status_code=200,detail=f"{e}")
+     return HTTPException(status_code=200,detail=f"{e}")
     
 @app.post("/generate_circuit")
 async def generate_circuit(parameters: list, gates: list):
