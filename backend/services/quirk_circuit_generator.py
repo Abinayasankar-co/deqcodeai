@@ -1,3 +1,4 @@
+import json5
 import json
 import os
 from fastapi.exceptions import HTTPException
@@ -55,15 +56,21 @@ class QuantumLLM:
     def __init__(self):
         self.quantum = ChatGroq(api_key=api_key)
 
-    def llm_request(self):
+    def llm_request(self,statements : str) -> object:
         try:
-          user_input = QuantumPrompt.get_prompt()
+          user_input = QuantumPrompt.get_prompt(statement=statements)
           messages = [
              SystemMessage(content="you are a helpful assistant."),
              HumanMessage(content=user_input)
           ]
-          response = self.quantum(messages, model="llama3-8b-8192", temperature=0.5, max_tokens=1024, top_p=1)
-          print(response)
-          return response['text']
+          response = self.quantum.invoke(messages, model="llama3-8b-8192", temperature=0.5, max_tokens=3000, top_p=1)
+          content_str = response.content 
+          print(content_str)
+          try:
+                content = json5.loads(content_str)
+          except json.JSONDecodeError as json_err:
+                raise HTTPException(status_code=500, detail=f"JSON decode error: {json_err}")
+          print(content)
+          return content
         except Exception as e:
-            return HTTPException(status_code=500,detail=f"{e}")
+            raise HTTPException(status_code=500,detail=f"{e}")

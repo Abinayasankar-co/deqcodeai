@@ -1,11 +1,15 @@
-import os
-from fastapi import FastAPI
+from pydantic import BaseModel
+from fastapi import FastAPI,Form
 from fastapi.exceptions import HTTPException
-from services.llm import QuantmLLM
 from services.algassertprod import QuirkCircuitGenerator
 from services.quirk_circuit_generator import QuantumLLM
 
 app = FastAPI()
+
+
+class QuibitsGeneratorinput(BaseModel):
+    statements : str = Form(...)
+
 
 
 @app.get("/health")
@@ -13,13 +17,13 @@ def app_health():
     return {"health":"DeqcodeAI"}
 
 @app.post("/design-circuit")
-def design_circuit():
+def design_circuit(QuiBitsGeneratorinput: QuibitsGeneratorinput):
     try:
-     quantum_verifier = QuantmLLM()
-     resposnes = quantum_verifier.llm_request()
+     quantum_verifier = QuantumLLM()
+     resposnes = quantum_verifier.llm_request(QuiBitsGeneratorinput.statements)
      return {"Response":resposnes}
     except Exception as e:
-     return HTTPException(status_code=200,detail=f"{e}")
+     raise HTTPException(status_code=500,detail=f"{e}")
     
 @app.post("/generate_circuit")
 async def generate_circuit(parameters: list, gates: list):
