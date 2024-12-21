@@ -17,7 +17,7 @@ class QuirkCircuitGenerator:
             "H", "X", "Y", "Z", "S", "T", "CX", "CCX", "SWAP", "RX", "RY", "RZ",
             "Measure", "InputA", "InputB", "InputC"
         }
-        self.circuit = []  
+        self.circuit = []
         self.qubit_count = 0
 
     def add_qubits(self, count):
@@ -26,7 +26,7 @@ class QuirkCircuitGenerator:
     def validate_gate(self, gate):
         if gate not in self.supported_gates:
             raise ValueError(f"Gate '{gate}' is not supported by Quirk.")
-            
+
     def add_gate(self, gate, targets, controls=None, params=None):
         self.validate_gate(gate)
         all_indices = (targets if targets else []) + (controls if controls else [])
@@ -43,11 +43,13 @@ class QuirkCircuitGenerator:
         return json.dumps({"cols": self.circuit}, indent=2)
 
     def generate_quirk_url(self):
-        quirk_data = {"cols": self.circuit}
-        data = json.dumps(quirk_data)
-        print(data)
-        encoded_data = urllib.parse.quote(json.dumps(quirk_data))
-        return f"https://algassert.com/quirk#circuit={encoded_data}"
+        try:
+         quirk_data = {"cols": self.circuit}
+         data = json.dumps(quirk_data)
+         #encoded_data = urllib.parse.quote(json.dumps(quirk_data))
+         return f"https://algassert.com/quirk#circuit={data}"
+        except Exception as e:
+            return HTTPException(status_code=500,detail=f"{e}")
 
 class QuantumLLM:
     def __init__(self):
