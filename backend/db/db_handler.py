@@ -11,3 +11,6 @@ class dbhandles:
           self.encoded_password = urllib.parse.quote_plus(password)
           self.Client = MongoClient(f"mongodb+srv://{self.encoded_username}:{self.encoded_password}@alsadocs.2uqmgxl.mongodb.net/?retryWrites=true&w=majority&appName=ALSADOCS")
           self.database = self.Client["ALSA_DB"]
+
+    def ping_user():
+         pass
