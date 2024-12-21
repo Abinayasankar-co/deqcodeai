@@ -1,15 +1,17 @@
-#Sample Codes for our references this code have not been included in Production
 import json
+import math
 import urllib.parse
+from qiskit import QuantumCircuit
+from fastapi import HTTPException
 
-class QuirkCircuitGenerator:
+class QuantumCircuitGenerator:
+    supported_gates = {
+        "H", "X", "Y", "Z", "S", "T", "CX", "CCX", "SWAP", "RX", "RY", "RZ",
+        "Measure", "InputA", "InputB", "InputC"
+    }
+
     def __init__(self):
-        self.supported_gates = {
-            "H", "X", "Y", "Z", "S", "T", "CX", "CCX", "SWAP", "RX", "RY", "RZ",
-            "Measure", "InputA", "InputB", "InputC"
-        }
         self.circuit = []
-        self.qubit_count = 0
 
     def add_qubits(self, count):
         self.qubit_count = count
@@ -36,68 +38,170 @@ class QuirkCircuitGenerator:
     def generate_quirk_url(self):
         quirk_data = {"cols": self.circuit}
         data = json.dumps(quirk_data)
-        #encoded_data = urllib.parse.quote(json.dumps(quirk_data))
-        return f"https://algassert.com/quirk#circuit={data}"
-    
+        print(data)
+        parsed_data = urllib.parse.quote(json.dumps(quirk_data))
+        return f"https://algassert.com/quirk#circuit={parsed_data}"
+
+    @staticmethod
+    def generate_circuit_from_json(input_data):
+     # Extract parameters
+     parameters = input_data.get("Parameters", [{}])[0]
+     n = parameters.get("n", 1)
+
+     # Create circuits
+     qc = QuantumCircuit(n)
+     generator = QuantumCircuitGenerator()
+     generator.add_qubits(n)
+
+     # Add gates to circuit
+     for gate_info in input_data.get("gates", []):
+         gate = gate_info.get("gate")
+         
+         # Convert single qubit to list
+         qubits = gate_info.get("qubits", [])
+         if isinstance(qubits, int):
+             qubits = [qubits]
+         elif not qubits:
+             qubits = [gate_info.get("qubit", 0)]
+
+         # Convert single param to list  
+         params = gate_info.get("params", [])
+         if isinstance(params, (int, float)):
+             params = [params]
+
+         if gate in QuantumCircuitGenerator.supported_gates:
+             try:
+                 if gate == "H":
+                     qc.h(qubits[0])
+                 elif gate == "X":
+                     qc.x(qubits[0])
+                 elif gate == "Y": 
+                     qc.y(qubits[0])
+                 elif gate == "Z":
+                     qc.z(qubits[0])
+                 elif gate == "S":
+                     qc.s(qubits[0])
+                 elif gate == "T":
+                     qc.t(qubits[0])
+                 elif gate == "CX":
+                     qc.cx(qubits[0], qubits[1])
+                 elif gate == "CCX":
+                     qc.ccx(qubits[0], qubits[1], qubits[2])
+                 elif gate == "SWAP":
+                     qc.swap(qubits[0], qubits[1])
+                 elif gate == "RX":
+                     qc.rx(params[0], qubits[0])
+                 elif gate == "RY":
+                     qc.ry(params[0], qubits[0])
+                 elif gate == "RZ":
+                     qc.rz(params[0], qubits[0])
+                 elif gate == "Measure":
+                     qc.measure_all()
+
+                 generator.add_gate(gate, qubits, params=params)
+
+             except IndexError as e:
+                print(f"Warning: Missing parameters for gate {gate}: {e}")
+                continue
+
+     quirk_url = generator.generate_quirk_url()
+     return qc, quirk_url
 
 if __name__ == "__main__":
     # Example input
+    inputs_data = {
+        "Parameters": [
+            {
+                "n": 2
+            }
+        ],
+        "gates": [
+            {"gate": "H", "qubits": [0]},
+            {"gate": "CX", "qubits": [0, 1]},
+            {"gate": "RX", "params": [math.pi/2], "qubits": [0]},
+            {"gate": "Measure", "qubits": [0, 1]}
+        ]
+    }
     input_data = {
-  'Parameters': [
-    {
-      'n_qubits': 1,
-      'num_samples': 1024
-    }
-  ],
-  'gates': [
-    {
-      'gate': 'H',
-      'qubit': 0
-    },
-    {
-      'gate': 'RZ',
-      'qubit': 0,
-      'params': [
-        0.5
-      ]
-    },
-    {
-      'gate': 'RX',
-      'qubit': 0,
-      'params': [
-        0.5
-      ]
-    },
-    {
-      'gate': 'H',
-      'qubit': 0
-    }
-  ],
-  'code': {
-    'import': 'from qiskit import QuantumCircuit, execute',
-    'qc': 'qc = QuantumCircuit(n_qubits)',
-    'qc_h': 'qc.h(0)',
-    'qc_rz': 'qc.rz(0.5, 0)',
-    'qc_rx': 'qc.rx(0.5, 0)',
-    'qc_h_again': 'qc.h(0)',
-    'job': 'job = execute(qc, shots=num_samples)'
-  }
-}
+    "Parameters": [
+        {
+            "n_qubits": 3,
+            "num_samples": 1
+        }
+    ],
+    "gates": [
+        {
+            "gate": "InputC",
+            "qubit": 0
+        },
+        {
+            "gate": "RY",
+            "params": [0.5],
+            "qubit": 0
+        },
+        {
+            "gate": "RY",
+            "params": [0.5],
+            "qubit": 1
+        },
+        {
+            "gate": "RY",
+            "params": [0.5],
+            "qubit": 2
+        },
+        {
+            "gate": "CCX",
+            "control_qubit": 0,
+            "target_qubit": 1
+        },
+        {
+            "gate": "CCX",
+            "control_qubit": 0,
+            "target_qubit": 2
+        },
+        {
+            "gate": "CCX",
+            "control_qubit": 1,
+            "target_qubit": 2
+        },
+        {
+            "gate": "Measure",
+            "qubit": 0
+        },
+        {
+            "gate": "Measure",
+            "qubit": 1
+        },
+        {
+            "gate": "Measure",
+            "qubit": 2
+        }
+    ],
+    "code": """
+        from qiskit import QuantumCircuit, execute 
+        import numpy as np
 
-    generator = QuirkCircuitGenerator()
-    generator.add_qubits(input_data["Parameters"][0]["n_qubits"])
+        qc = QuantumCircuit(3)
 
-    for gate in input_data["gates"]:
-        generator.add_gate(
-            gate["gate"],
-            [gate["qubit"]],
-            params=gate.get("params")
-        )
+        qc.input_statevector([1,0,0])
 
-    quirk_json = generator.generate_json()
-    quirk_url = generator.generate_quirk_url()
+        qc.ry(0.5,0)
+        qc.ry(0.5,1)
+        qc.ry(0.5,2)
 
-    print("Quirk JSON:")
-    print(quirk_json)
-    print("\nQuirk URL:")
-    print(quirk_url)
+        qc.ccx(0,1,2)
+        qc.ccx(0,2,2)
+        qc.ccx(1,2,2)
+
+        qc.measure_all()
+
+        job = execute(qc, backend='qasm_simulator', shots=1)
+        result = job.result()
+        counts = result.get_counts(qc)
+        print(counts)
+        """}
+
+    # Generate the circuit and Quirk URL
+    qc, quirk_url = QuantumCircuitGenerator.generate_circuit_from_json(input_data)
+    print(qc.draw())
+    print("Quirk URL:", quirk_url)

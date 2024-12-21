@@ -1,6 +1,10 @@
 class QuantumPrompt:
     @staticmethod
     def get_prompt(statement : str)->str:
+        supported_gates = {
+            "H", "X", "Y", "Z", "S", "T", "CX", "CCX", "SWAP", "RX", "RY", "RZ",
+            "Measure", "InputA", "InputB", "InputC"
+        }
         json_structured_ouput = """
            {{
                    "Parameters":[{{
@@ -17,7 +21,10 @@ class QuantumPrompt:
  
         """
         return f""" Imagine yourself as a Quantum Circuit designer and load more complex quantum circuits at your Cache like shore algorithm and so on.
+                    You must Generate circuits w.r.t these gates {supported_gates} and provide the relevant qiskit code for the same.
                     Provide a circuit gates for quantum circuit for generating a solution for the given problem statement {statement}.
+                    Think Smart before generating the gates and check for the easiest , smallest and shortest way of generating the circuit with minimal gates.
+                    Note: The circuit with minimal gates of more optimized approach is of more importance.
                     The output should only be in the json as mentioning the parameters and the gates.
                     The keys of json are shown here as {json_structured_ouput}
                     Refer Algassert gates and formulas for producing the output.

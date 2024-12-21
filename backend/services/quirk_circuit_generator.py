@@ -2,10 +2,10 @@ import json5
 import json
 import os
 from fastapi.exceptions import HTTPException
-import urllib.parse
 from langchain_groq import ChatGroq
 from langchain.schema import SystemMessage, HumanMessage
 from services.prompt_manager import QuantumPrompt
+from services.util import extract_json_from_content
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -67,7 +67,8 @@ class QuantumLLM:
           content_str = response.content 
           print(content_str)
           try:
-                content = json5.loads(content_str)
+                content = extract_json_from_content(content_str)
+                print(content)
           except json.JSONDecodeError as json_err:
                 raise HTTPException(status_code=500, detail=f"JSON decode error: {json_err}")
           print(content)

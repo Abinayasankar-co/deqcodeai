@@ -1,7 +1,7 @@
 from pydantic import BaseModel
 from fastapi import FastAPI,Form
 from fastapi.exceptions import HTTPException
-from services.algassertprod import QuirkCircuitGenerator
+from services.algassertprod import QuantumCircuitGenerator
 from services.quirk_circuit_generator import QuantumLLM
 
 app = FastAPI()
