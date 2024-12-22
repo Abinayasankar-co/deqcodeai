@@ -15,6 +15,7 @@ def extract_json_from_content(content_str: str) -> dict:
         json_str = re.sub(r'\\\"', '"', json_str)
         
         # Parse JSON
+        print(parsed_json)
         parsed_json = json5.loads(json_str)
         
         # Validate structure

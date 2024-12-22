@@ -1,10 +1,20 @@
 #Sample Code this code  have not been included in production
-from groq import Groq
 import os
+import json
+from fastapi.exceptions import HTTPException
+from groq import Groq
+from langchain_groq import ChatGroq
+from langchain.schema import SystemMessage, HumanMessage
+from services.prompt_manager import QuantumPrompt
+from services.util import extract_json_from_content
 from dotenv import load_dotenv
 
 
 load_dotenv()
+
+load_dotenv()
+
+api_key = os.environ["GROQ_API_KEY"]
 
 class QuantmLLM:
     def  __init__(self):
@@ -47,4 +57,28 @@ class QuantmLLM:
             stop=None,
         )
         return responses
+    
+class QuantumLLM:
+    def __init__(self):
+        self.quantum = ChatGroq(api_key=api_key)
+
+    def llm_request(self,statements : str) -> object:
+        try:
+          user_input = QuantumPrompt.get_prompt(statement=statements)
+          messages = [
+             SystemMessage(content="you are a helpful assistant providing answers only in a strucutred Valid json format."),
+             HumanMessage(content=user_input)
+          ]
+          response = self.quantum.invoke(messages, model="llama3-8b-8192", temperature=0.5, max_tokens=3000, top_p=1)
+          content_str = response.content 
+          print(content_str)
+          try:
+                content = extract_json_from_content(content_str)
+                print(content)
+          except json.JSONDecodeError as json_err:
+                raise HTTPException(status_code=500, detail=f"JSON decode error: {json_err}")
+          print(content)
+          return content
+        except Exception as e:
+            raise HTTPException(status_code=500,detail=f"{e}")
         
