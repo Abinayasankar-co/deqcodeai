@@ -70,7 +70,7 @@ class QuantumLLM:
 
             # Create the StructuredOutputParser and Formatting 
             parser = StructuredOutputParser.from_response_schemas(response_schemas)
-            format_instructions = parser.get_format_instructions()
+            format_instructions = parser.get_format_instructions(only_json=True)
             user_input = QuantumPrompt.get_prompt(statement=statements)
             prompt_template = f"{user_input}\n\n{format_instructions}"
 
@@ -83,7 +83,8 @@ class QuantumLLM:
             content_str = response.content
             print(content_str)
             try:
-                content = json.loads(content_str)  
+                #content = json.loads(content_str)  
+                content = extract_json_from_content(content_str)
             except json.JSONDecodeError as json_err:
                 raise HTTPException(status_code=500, detail=f"JSON decode error: {json_err}")
 

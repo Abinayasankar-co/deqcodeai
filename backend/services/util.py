@@ -9,21 +9,12 @@ def extract_json_from_content(content_str: str) -> dict:
         if start == -1 or end == -1:
             raise ValueError("No JSON structure found")
         json_str = content_str[start:end + 1]
-        
-        # Clean up the string
         json_str = re.sub(r'\\n', '', json_str)
         json_str = re.sub(r'\\\"', '"', json_str)
-        
-        # Parse JSON
-        print(parsed_json)
-        parsed_json = json5.loads(json_str)
-        
-        # Validate structure
+        parsed_json = json5.loads(json_str) # Parse the JSON string using json5
         if not isinstance(parsed_json, dict):
-            raise ValueError("Invalid JSON structure")
-        
+            raise ValueError("Invalid JSON structure") 
         return parsed_json
-        
     except Exception as e:
         returned_result = {"content": content_str}
         raise HTTPException(status_code=500, detail=f"Error parsing JSON: {e}- {returned_result}")

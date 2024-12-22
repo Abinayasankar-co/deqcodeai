@@ -29,7 +29,7 @@ def design_circuit(QuiBitsGeneratorinput: QuibitsGeneratorinput):
 async def generate_circuit(parameters: list, gates: list):
     llm = QuantumLLM()
     response = llm.llm_request(parameters, gates)
-    generator = QuirkCircuitGenerator()
+    generator = QuantumCircuitGenerator()
     generator.add_qubits(3)
     generator.add_gate("H", [0])
     generator.add_gate("CX", [1], controls=[0])
