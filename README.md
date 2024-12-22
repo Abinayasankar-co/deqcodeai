@@ -13,16 +13,17 @@ The story : Lines througth the gap of things we can develop something which is m
 
 ![Circuit Automation](<Screenshot 2024-12-22 142925.png>)
 
-Experiment 2: Most of the Finetuning LLM can be launched as an behaviour and they can be developed to achieve the state and pther precised activity on which the user can view the circuit get an explanation how it works and also can see why it is important, as our Models can learn how to develop such things. Cache techniwues using langchain tools adds more value to the state precision of the LLM.
 
-Experiment 3: The GAN network achitecture and the Finetuned Behaviourly patterns of LLM'S makes the circuit more preceived and can be effectively and effeiciently used by more product based companies in the sector areas of marketing, fnance, Chemical , biological industries and so on.
+Experiment 2: Most of the fine-tuned LLMs can be launched as a behavior, and they can be developed to achieve precise states and activities. Users can view the circuit, get an explanation of how it works, and understand why it is important, as our models learn how to develop such systems. Cache techniques using LangChain tools add more value to the state precision of the LLM.
 
-Experiment 4:The Usage of Knowledge Circuits: To cut-off LLM hallunciantions and other activites which the LLM makes us to delebrately avoid correct path have been recovered using these techniques.
+Experiment 3: The GAN network architecture and the fine-tuned behavioral patterns of LLMs make the circuit more perceptive and can be effectively and efficiently utilized by more product-based companies in sectors like marketing, finance, chemical, biological industries, and so on.
 
-Experiment 5: This Discovers only the pattern of how users need as in case of Collaborativ filtering and offers the Circuit by their personal needs and makes it more unique and Quiker for our clients to enhance the circuits and their product 
+Experiment 4: The usage of knowledge circuits: To mitigate LLM hallucinations and other activities that lead the LLM to deviate from the correct path, these techniques have been applied successfully.
 
-Experiment 6: It makes our Client to feel better with the AI tools and they can learn side-by-side the Importance of Quantum and the usage of circuits and it's gates based on their chats with our AI models
+Experiment 5: This focuses on discovering user patterns through collaborative filtering and offers the circuit tailored to their personal needs, making it more unique and quicker for our clients to enhance the circuits and their products.
 
-Experiment 7: We provide Client's with templates that have been preformed for certain cases and makes it more easier for them to get write into their action
+Experiment 6: It enhances our clients' experiences with AI tools, allowing them to learn the importance of quantum computing, circuits, and their gates alongside their interactions with our AI models.
 
-Experiment 8: We are here to solve the problems of circuits and also to make the Quantum computing market a huge contributing support.
+Experiment 7: We provide clients with pre-designed templates for specific cases, making it easier for them to put their ideas into action.
+
+Experiment 8: We aim to solve circuit-related problems and contribute significantly to the quantum computing market as a supporting force.
