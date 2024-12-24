@@ -18,16 +18,21 @@ const Main = () => {
     setIsLoading(true);
 
     try {
-      const response = await fetch('http://localhost:8000/api/design', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ message }),
-      });
+      setTimeout(async () => {
+        console.log(message);
+        const response = await fetch('http://localhost:8000/api/design', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ message }),
+        });
+  
+        const data = await response.json();
+        setResult(data);
 
-      const data = await response.json();
-      setResult(data);
+
+      },1000)
     } catch (error) {
       console.error(error);
     }
