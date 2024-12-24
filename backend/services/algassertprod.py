@@ -176,30 +176,7 @@ if __name__ == "__main__":
             "gate": "Measure",
             "qubit": 2
         }
-    ],
-    "code": """
-        from qiskit import QuantumCircuit, execute 
-        import numpy as np
-
-        qc = QuantumCircuit(3)
-
-        qc.input_statevector([1,0,0])
-
-        qc.ry(0.5,0)
-        qc.ry(0.5,1)
-        qc.ry(0.5,2)
-
-        qc.ccx(0,1,2)
-        qc.ccx(0,2,2)
-        qc.ccx(1,2,2)
-
-        qc.measure_all()
-
-        job = execute(qc, backend='qasm_simulator', shots=1)
-        result = job.result()
-        counts = result.get_counts(qc)
-        print(counts)
-        """}
+    ]}
 
     # Generate the circuit and Quirk URL
     qc, quirk_url = QuantumCircuitGenerator.generate_circuit_from_json(input_data)
