@@ -21,7 +21,9 @@ def design_circuit(QuiBitsGeneratorinput: QuibitsGeneratorinput):
     try:
      quantum_verifier = QuantumLLM()
      resposnes = quantum_verifier.llm_request(QuiBitsGeneratorinput.statements)
-     return {"Response":resposnes}
+     qc, quirk_url = QuantumCircuitGenerator.generate_circuit_from_json(resposnes)
+     print(qc)
+     return {"Response":resposnes,"url":quirk_url,"content":resposnes.get("explanation")}
     except Exception as e:
      raise HTTPException(status_code=500,detail=f"{e}")
     

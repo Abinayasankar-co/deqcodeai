@@ -2,10 +2,12 @@ import React, { useState } from 'react';
 import { Container, Row, Col } from 'react-bootstrap';
 import Navbar from './Navbar';
 import Sidebar from './Sidebar';
+import Spinner from './Spinner';
 import ChatInterface from './ChatInterface';
 import ResultDisplay from './ResultDisplay';
 
-const Main = ({ email }) => {
+const Main = () => {
+  const [email, setEmail] = useState('');
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [messages, setMessages] = useState([]);
   const [result, setResult] = useState(null);
@@ -51,6 +53,7 @@ const Main = ({ email }) => {
           }}
         >
           <ChatInterface onSubmit={handleSubmit} />
+          {isLoading && <Spinner />}
           <div className="flex-1 overflow-auto p-4">
             {result && <ResultDisplay url={result.url} content={result.content} />}
           </div>
