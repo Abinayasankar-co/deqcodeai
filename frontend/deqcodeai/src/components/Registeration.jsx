@@ -1,7 +1,10 @@
 import React, { useState } from 'react';
-import '../styles/registration_page.css';
+import { FaEye, FaEyeSlash } from 'react-icons/fa';
+import { useNavigate } from 'react-router-dom';
 
 function Registration() {
+  const [showPassword, setShowPassword] = useState(false);
+  const navigate = useNavigate();
   const [formData, setFormData] = useState({
     user_name: '',
     password: '',
@@ -41,125 +44,143 @@ function Registration() {
     } catch (error) {
       console.error('Error:', error);
       alert('An error occurred.');
+      navigate('/error_portal')
     }
   };
 
   return (
-    <div className="registration-container">
-      <h1>Register</h1>
-      <form onSubmit={handleSubmit}>
-        <label>
-          User Name:
-          <input
-            type="text"
-            name="user_name"
-            value={formData.user_name}
-            onChange={handleChange}
-            placeholder="Enter your user name"
-            required
-          />
-        </label>
-        <label>
-          Password:
-          <input
-            type="password"
-            name="password"
-            value={formData.password}
-            onChange={handleChange}
-            placeholder="Enter your password"
-            required
-          />
-        </label>
-        <label>
-          Competency:
-          <input
-            type="text"
-            name="competency"
-            value={formData.competency}
-            onChange={handleChange}
-            placeholder="Enter your competency"
-          />
-        </label>
-        <label>
-          Purpose:
-          <input
-            type="text"
-            name="purpose"
-            value={formData.purpose}
-            onChange={handleChange}
-            placeholder="Enter the purpose"
-          />
-        </label>
-        <label>
-          Education:
-          <input
-            type="text"
-            name="education"
-            value={formData.education}
-            onChange={handleChange}
-            placeholder="Enter your education"
-          />
-        </label>
-        <label>
-          Pack:
-          <input
-            type="text"
-            name="pack"
-            value={formData.pack}
-            onChange={handleChange}
-            placeholder="Enter pack details"
-          />
-        </label>
-        <label>
-          Preference:
-          <input
-            type="text"
-            name="preference"
-            value={formData.preference}
-            onChange={handleChange}
-            placeholder="Enter your preference"
-          />
-        </label>
-        <label>
-          Found By:
-          <input
-            type="text"
-            name="foundby"
-            value={formData.foundby}
-            onChange={handleChange}
-            placeholder="Enter how you found us"
-          />
-        </label>
-        <label>
-          Circuit Count:
-          <input
-            type="number"
-            name="circuit_count"
-            value={formData.circuit_count}
-            onChange={handleChange}
-            placeholder="Enter the circuit count"
-          />
-        </label>
-        <label>
-          Review:
-          <textarea
-            name="review"
-            value={formData.review}
-            onChange={handleChange}
-            placeholder="Enter your review"
-          />
-        </label>
-        <label>
-          Notes By User:
-          <textarea
-            name="notesby_user"
-            value={formData.notesby_user}
-            onChange={handleChange}
-            placeholder="Enter your notes"
-          />
-        </label>
-        <button type="submit">Register</button>
-      </form>
+    <div className="bg-gray-900 text-white min-h-screen flex items-center justify-center">
+      <div className="max-w-md w-full bg-gray-800 p-6 rounded-lg shadow-lg">
+        <h1 className="text-2xl font-bold text-gray-100 text-center mb-6">Register</h1>
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <div>
+            <label className="block text-sm font-medium text-gray-300">User Name</label>
+            <input
+              type="text"
+              name="user_name"
+              value={formData.user_name}
+              onChange={handleChange}
+              placeholder="Enter your user name"
+              className="w-full p-2 mt-1 bg-gray-700 text-white rounded-md focus:outline-none focus:ring-2 focus:ring-cyan-500"
+              required
+            />
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-300">Competency</label>
+            <select
+              name="competency"
+              value={formData.competency}
+              onChange={handleChange}
+              className="w-full p-2 mt-1 bg-gray-700 text-white rounded-md focus:outline-none focus:ring-2 focus:ring-cyan-500"
+            >
+              <option value="" disabled>Select your competency</option>
+              <option value="Researcher">Researcher</option>
+              <option value="Scholar">Scholar</option>
+              <option value="Student">Student</option>
+            </select>
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-300">Purpose</label>
+            <select
+              name="purpose"
+              value={formData.purpose}
+              onChange={handleChange}
+              className="w-full p-2 mt-1 bg-gray-700 text-white rounded-md focus:outline-none focus:ring-2 focus:ring-cyan-500"
+            >
+              <option value="" disabled>Select the purpose</option>
+              <option value="Research">Research</option>
+              <option value="Work">Work</option>
+              <option value="Company Preferal">Company Preferal</option>
+            </select>
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-300">Education</label>
+            <select
+              name="education"
+              value={formData.education}
+              onChange={handleChange}
+              className="w-full p-2 mt-1 bg-gray-700 text-white rounded-md focus:outline-none focus:ring-2 focus:ring-cyan-500"
+            >
+              <option value="" disabled>Select your education level</option>
+              <option value="School">School</option>
+              <option value="College">College</option>
+              <option value="Work">Work</option>
+            </select>
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-300">Preference:</label>
+            <input
+              type="text"
+              name="preference"
+              value={formData.preference}
+              onChange={handleChange}
+              placeholder="Enter your preference"
+              className="w-full p-2 mt-1 bg-gray-700 text-white rounded-md focus:outline-none focus:ring-2 focus:ring-cyan-500"
+            />
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-300">Found By:</label>
+            <select
+              name="foundby"
+              value={formData.foundby}
+              onChange={handleChange}
+              className="w-full p-2 mt-1 bg-gray-700 text-white rounded-md focus:outline-none focus:ring-2 focus:ring-cyan-500"
+            >
+              <option value="" disabled>Select how you found us</option>
+              <option value="College">College</option>
+              <option value="Link">Link</option>
+              <option value="Suggested">Suggested</option>
+              <option value="Friends">Friends</option>
+            </select>
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-300">Review:</label>
+            <textarea
+              name="review"
+              value={formData.review}
+              onChange={handleChange}
+              placeholder="Enter your review"
+              className="w-full p-2 mt-1 bg-gray-700 text-white rounded-md focus:outline-none focus:ring-2 focus:ring-cyan-500"
+            />
+          </div>
+          <div>
+           <label className="block text-sm font-medium text-gray-300">Password:</label>
+             <div className="relative">
+               <input
+                    type={showPassword ? "text" : "password"}
+                    name="password"
+                    value={formData.password}
+                    onChange={handleChange}
+                    placeholder="Enter your password"
+                    className="w-full p-2 mt-1 bg-gray-700 text-white rounded-md focus:outline-none focus:ring-2 focus:ring-cyan-500"
+                    required
+                />
+                <span
+                   onClick={() => setShowPassword(!showPassword)}
+                   className="absolute inset-y-0 right-3 flex items-center text-gray-400 cursor-pointer"
+                >
+                {showPassword ? <FaEyeSlash /> : <FaEye />}
+                </span>
+             </div>
+           </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-300">Notes By User:</label>
+            <textarea
+              name="notesby_user"
+              value={formData.notesby_user}
+              onChange={handleChange}
+              placeholder="Enter your notes"
+              className="w-full p-2 mt-1 bg-gray-700 text-white rounded-md focus:outline-none focus:ring-2 focus:ring-cyan-500"
+            />
+          </div>
+          <button
+            type="submit"
+            className="w-full py-2 mt-4 bg-cyan-500 text-orange font-bold rounded-md hover:bg-cyan-600 transition"
+          >
+            Register
+          </button>
+        </form>
+      </div>
     </div>
   );
 }
