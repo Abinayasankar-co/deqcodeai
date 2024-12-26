@@ -1,7 +1,9 @@
 from pydantic import BaseModel
 from fastapi import FastAPI,Form
+from fastapi.middleware.cors import CORSMiddleware
 from fastapi.exceptions import HTTPException
 from services.algassertprod import QuantumCircuitGenerator
+from db.db_handler import dbhandles
 from services.quirk_circuit_generator import QuantumLLM
 
 app = FastAPI()
@@ -10,16 +12,47 @@ app = FastAPI()
 class QuibitsGeneratorinput(BaseModel):
     statements : str = Form(...)
 
+class DeqcodeUser(BaseModel):
+   username : str = Form(...)
+   password : str = Form(...)
+   competency : str = Form(...)
+   purpose : str = Form(...)
+   education : str = Form(...)
+   foundby : str = Form(...)
+   review : str = Form(...)
+   notesbyuser : str = Form(...)
+   preference : str = Form(...)
+   dateofjoin : str = Form(...)
+
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  # Specify the exact origin(s) you want to allow
+    allow_credentials=True,
+    allow_methods=["*"],  # Explicitly allow specific methods
+    allow_headers=["*"],  # Allows all headers, you can specify specific headers as well
+)
+
 
 
 @app.get("/health")
 def app_health():
     return {"health":"DeqcodeAI"}
 
+@app.post('/register')
+async def deqcode_user_registeration(DeqcodeUser : DeqcodeUser):
+        try:          
+          db_user = dbhandles()
+          user_message = await db_user.create_user(DeqcodeUser)
+          return user_message
+        except Exception as e:
+          raise HTTPException(status_code=500,detail=f"{e}")   
+
 @app.post("/design-circuit")
 def design_circuit(QuiBitsGeneratorinput: QuibitsGeneratorinput):
     try:
      quantum_verifier = QuantumLLM()
+     print(QuiBitsGeneratorinput.statements)
      resposnes = quantum_verifier.llm_request(QuiBitsGeneratorinput.statements)
      qc, quirk_url = QuantumCircuitGenerator.generate_circuit_from_json(resposnes)
      print(qc)

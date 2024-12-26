@@ -19,7 +19,6 @@ const Sidebar = ({ isOpen, toggle,chats}) => {
           <ChevronRightIcon className="h-6 w-6" />
         )}
       </button>
-
       <div
         className={`fixed top-0 left-0 h-full w-60 bg-gray-900 text-white shadow-lg transform transition-transform duration-300 ${
           isOpen ? "translate-x-0" : "-translate-x-full"

@@ -14,21 +14,31 @@ class QuantumPrompt:
              }
             ],
           "gates": [
-           {
+            {
              "gate": "H",
              "qubit": 0
-           },
-           {
+            },
+            {
              "gate": "RX",
              "qubit": 0,
              "angle": "acos(sqrt(p))"
-           },
-           {
+            },
+            {
              "gate": "Measure",
              "qubit": 0
-           }s
-        ],
-        "explanation": "This circuit generates a random number by applying Hadamard gates, RX gates with a probability p, and measuring the qubits. The CX gate is used to entangle the qubits."
+            },
+            {
+             "gate": "RY",
+             "params": [0.5],
+             "qubit": 2
+            },
+            {
+             "gate": "CCX",
+             "control_qubit": 0,
+             "target_qubit": 1
+            },
+          ],
+        "explanation": "This circuit generates a random number by applying Hadamard gates, RX gates with a probability p, and measuring the qubits.The CX gate is used to entangle the qubits."
         }
         """
         json_structured_ouput = """

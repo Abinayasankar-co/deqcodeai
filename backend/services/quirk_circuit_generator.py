@@ -1,4 +1,3 @@
-import json5
 import json
 import os
 from fastapi.exceptions import HTTPException
@@ -87,7 +86,6 @@ class QuantumLLM:
                 content = extract_json_from_content(content_str)
             except json.JSONDecodeError as json_err:
                 raise HTTPException(status_code=500, detail=f"JSON decode error: {json_err}")
-
             print(content)
             return content
         except Exception as e:

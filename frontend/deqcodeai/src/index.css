@@ -3,5 +3,5 @@
 @tailwind utilities;
 
 body {
-    @apply bg-black; /* You can use any color from the Tailwind color palette */
+    @apply bg-black; 
   }
