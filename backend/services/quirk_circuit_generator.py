@@ -51,8 +51,7 @@ class QuirkCircuitGenerator:
          return f"https://algassert.com/quirk#circuit={data}"
         except Exception as e:
             return HTTPException(status_code=500,detail=f"{e}")
-
-
+        
 class QuantumLLM:
     def __init__(self):
         self.quantum = ChatGroq(api_key=api_key)

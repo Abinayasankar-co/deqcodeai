@@ -2,7 +2,8 @@ import json
 import math
 import urllib.parse
 from qiskit import QuantumCircuit
-from fastapi import HTTPException
+from qiskit_aer import Aer
+import json
 
 class QuantumCircuitGenerator:
     supported_gates = {

@@ -1,10 +1,10 @@
 from pymongo import MongoClient
 from fastapi import HTTPException
+from datetime import datetime
 from dotenv import load_dotenv
+from services.util import hash_password , create_session_token
 import bcrypt
 import urllib.parse
-import base64
-
 
 class dbhandles:
         def __init__(self,username="ALSA_LOGIN_MANAGER",password="Abinay@200504") -> None:
@@ -20,7 +20,7 @@ class dbhandles:
              circuit_count = 0 
              user_document = {
                "user_name": deqcodeuser.username,
-               "password" : deqcodeuser.password,
+               "password" : hash_password(deqcodeuser.password),
                "competency" : deqcodeuser.competency,
                "purpose" : deqcodeuser.purpose,
                "education": deqcodeuser.education,
@@ -37,30 +37,66 @@ class dbhandles:
             except Exception as e:
                 raise  HTTPException(status_code=500,detail=f"{e}")
             
-        async def login_user(self): # To login the user in the database
+        async def login_user(self,Deqcodelogger): # To login the user in the database
+            try:
+                collections = self.database["DEQODE_USER_LIST"]
+                user = collections.find_one({"username":Deqcodelogger.username})
+                if user:
+                    if bcrypt.checkpw(Deqcodelogger.password.encode('utf-8'), user["password"]):
+                        session_token = create_session_token(Deqcodelogger.username,user["password"])
+                        try:  
+                           collections.update_one(
+                           {'username': user["username"]},
+                            {
+                             "$push": {
+                                 f"session_{datetime.now()}": session_token
+                             }
+                            }
+                          )
+                        except Exception as e:
+                            raise HTTPException(status_code=500,detail=f"Session Key have not been Updated to the DB{e}") 
+                        return {"Message":"You are logged in","sessionkey":session_token}
+                    else:
+                        raise HTTPException(status_code=500,detail="Invalid Password") 
+                else:
+                    return {"Message":"User not found"}
+            except Exception as e:
+                raise HTTPException(status_code=400,detail=f"User not found")
+
+        async def get_users(self):
             pass
 
-        async def get_user(self):
-            pass
+        async def storing_circuit_info(self,username:str,circuit): #Storing Circuits
+            try:
+                collections = self.database["DEQODE_USER_LIST"]
+                user = collections.find_one({"username":username})
+                if user:
+                    collections.update_one(
+                        {'username': user["username"]},
+                        {
+                            "$push": {
+                                "circuit": circuit
+                            }
+                        },
 
-        async def update_user_details(self):
-            pass
+                    )
+                else:
+                    raise HTTPException(status_code=400,detail="User not found")
+            except Exception as e:
+                raise HTTPException(status_code=500,detail=f"{e}")
 
-        async def storing_circuit_info(self):
+        async def releasing_circuit_info(self): #Deleted Circuits
             pass
-
-        async def releasing_circuit_info(self):
-            pass
-
+  
         async def get_circuit_info(self):
             pass
-        
+         
         async def del_user_logs(self):
             pass
-        
+         
         async def user_input_logs(self):
             pass
-
+        
         async def static_deqode_pricing_plans(self):
             pass
         

@@ -1,5 +1,8 @@
 import json5
+from datetime import datetime, timedelta
 import re
+import jwt
+import bcrypt
 from fastapi import HTTPException
 
 def extract_json_from_content(content_str: str) -> dict:
@@ -18,3 +21,16 @@ def extract_json_from_content(content_str: str) -> dict:
     except Exception as e:
         returned_result = {"content": content_str}
         raise HTTPException(status_code=500, detail=f"Error parsing JSON: {e}- {returned_result}")
+
+def hash_password(password: str) -> str:
+        try:
+            hashed = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt())
+            return hashed.decode('utf-8')
+        except Exception as e:
+            raise HTTPException(status_code=500, detail=f"While Processing Request :{e}") 
+        
+def create_session_token(username: str, token_secret: str) -> str:
+    expiration = datetime.now() + timedelta(hours=1)
+    token = jwt.encode({"username": username, "exp": expiration}, token_secret, algorithm="SHA256")
+    return token
+        

@@ -10,6 +10,7 @@ app = FastAPI()
 
 
 class QuibitsGeneratorinput(BaseModel):
+    username : str = Form(...)
     statements : str = Form(...)
 
 class DeqcodeUser(BaseModel):
@@ -23,6 +24,10 @@ class DeqcodeUser(BaseModel):
    notesbyuser : str = Form(...)
    preference : str = Form(...)
    dateofjoin : str = Form(...)
+
+class DeqcodeUserLogin(BaseModel):
+    username : str = Form(...)
+    password : str = Form(...)
 
 
 app.add_middleware(
@@ -46,17 +51,29 @@ async def deqcode_user_registeration(DeqcodeUser : DeqcodeUser):
           user_message = await db_user.create_user(DeqcodeUser)
           return user_message
         except Exception as e:
-          raise HTTPException(status_code=500,detail=f"{e}")   
+          raise HTTPException(status_code=500,detail=f"{e}") 
+
+@app.post('/login')
+async def deqcode_user_login(DeqcodeUserLogin : DeqcodeUserLogin):
+        try:
+          db_user = dbhandles()
+          logger_message = await db_user.login_user(DeqcodeUserLogin)
+          return logger_message
+        except Exception as e:
+          raise HTTPException(status_code=500,detail=f"{e}")  
 
 @app.post("/design-circuit")
 def design_circuit(QuiBitsGeneratorinput: QuibitsGeneratorinput):
     try:
-     quantum_verifier = QuantumLLM()
-     print(QuiBitsGeneratorinput.statements)
-     resposnes = quantum_verifier.llm_request(QuiBitsGeneratorinput.statements)
-     qc, quirk_url = QuantumCircuitGenerator.generate_circuit_from_json(resposnes)
-     print(qc)
-     return {"Response":resposnes,"url":quirk_url,"content":resposnes.get("explanation")}
+      quantum_verifier = QuantumLLM()
+      db = dbhandles()
+      print(QuiBitsGeneratorinput.statements)
+      resposnes = quantum_verifier.llm_request(QuiBitsGeneratorinput.statements)
+      qc, quirk_url = QuantumCircuitGenerator.generate_circuit_from_json(resposnes)
+      print(qc)
+      result = {"Response":resposnes,"url":quirk_url,"content":resposnes.get("explanation")}
+      db.storing_circuit_info(result)
+      return result
     except Exception as e:
      raise HTTPException(status_code=500,detail=f"{e}")
     
