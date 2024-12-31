@@ -18,7 +18,7 @@ api_key = os.environ["GROQ_API_KEY"]
 
 class QuantmLLM:
     def  __init__(self):
-        self.quantum = Groq(api_key="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")
+        self.quantum = Groq(api_key=api_key)
         pass
 
     def llm_request(self):

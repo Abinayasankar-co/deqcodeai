@@ -18,6 +18,7 @@ const Main = () => {
   const handleSubmit = async (message) => {
     setMessages([...messages, message]);
     const statements = {
+      'username': "Abinayasankar",
       'statements': message
     }
 

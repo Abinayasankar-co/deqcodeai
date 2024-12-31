@@ -62,7 +62,6 @@ class QuantumLLM:
             response_schemas = [
                 ResponseSchema(name="Parameter", description="Generate the parameter as per the prmpt"),
                 ResponseSchema(name="gates", description="Generate the gates as per the prompt"),
-                ResponseSchema(name="code", description="This contains the relevant qiskit code for this"),
                 ResponseSchema(name="explanation", description="This contains the explanation of the code and circuit")
             ]
 

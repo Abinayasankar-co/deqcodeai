@@ -1,8 +1,7 @@
 import json
 import math
 import urllib.parse
-from qiskit import QuantumCircuit
-from qiskit_aer import Aer
+from qiskit import QuantumCircuit,Aer,execute
 import json
 
 class QuantumCircuitGenerator:
@@ -91,11 +90,14 @@ class QuantumCircuitGenerator:
                  elif gate == "SWAP":
                      qc.swap(qubits[0], qubits[1])
                  elif gate == "RX":
-                     qc.rx(params[0], qubits[0])
+                     angle = eval(gate["angle"])
+                     qc.rx(angle, qubits[0])
                  elif gate == "RY":
-                     qc.ry(params[0], qubits[0])
+                     angle = eval(gate["angle"])
+                     qc.ry(angle, qubits[0])
                  elif gate == "RZ":
-                     qc.rz(params[0], qubits[0])
+                     angle = eval(gate["angle"])
+                     qc.rz(angle, qubits[0])
                  elif gate == "Measure":
                      qc.measure_all()
 
@@ -107,6 +109,13 @@ class QuantumCircuitGenerator:
 
      quirk_url = generator.generate_quirk_url()
      return qc, quirk_url
+    
+    def run_circuit(self, shots=1024):
+        if self.qc is None:
+            raise ValueError("Circuit not generated. Call generate_circuit first.")
+        simulator = Aer.get_backend("qasm_simulator")
+        result = execute(self.qc, simulator, shots=shots).result()
+        return result.get_counts(self.qc)
 
 if __name__ == "__main__":
     # Example input

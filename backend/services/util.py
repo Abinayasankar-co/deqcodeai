@@ -1,5 +1,6 @@
 import json5
 from datetime import datetime, timedelta
+import random
 import re
 import jwt
 import bcrypt
@@ -29,8 +30,13 @@ def hash_password(password: str) -> str:
         except Exception as e:
             raise HTTPException(status_code=500, detail=f"While Processing Request :{e}") 
         
-def create_session_token(username: str, token_secret: str) -> str:
-    expiration = datetime.now() + timedelta(hours=1)
-    token = jwt.encode({"username": username, "exp": expiration}, token_secret, algorithm="SHA256")
+def create_session_token(username: str) -> str:
+    payload = {
+        "sub" : username,
+        "iot" : datetime.now().isoformat(),
+        "exp": datetime.now() + timedelta(hours=2)
+    }
+    token_secret = lambda username : ''.join(random.shuffle(list(username)))
+    token = jwt.encode(payload, token_secret, algorithm="SHA256")
     return token
         

@@ -24,7 +24,6 @@ const ResultDisplay = ({ url, content }) => (
       </Card>
       </Col>
     </Row>
-
     <Row>
       <Col>
         <Card className="bg-dark border-secondary py-4">

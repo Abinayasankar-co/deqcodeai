@@ -4,10 +4,14 @@ from datetime import datetime
 from dotenv import load_dotenv
 from services.util import hash_password , create_session_token
 import bcrypt
+import os
 import urllib.parse
 
+load_dotenv()
+
+
 class dbhandles:
-        def __init__(self,username="ALSA_LOGIN_MANAGER",password="Abinay@200504") -> None:
+        def __init__(self,username=os.environ["MONGO_USERNAME"],password=os.environ["MONGO_PASSWORD"]) -> None:
           self.encoded_username = urllib.parse.quote_plus(username)
           self.encoded_password = urllib.parse.quote_plus(password)
           self.Client = MongoClient(f"mongodb+srv://{self.encoded_username}:{self.encoded_password}@alsadocs.2uqmgxl.mongodb.net/?retryWrites=true&w=majority&appName=ALSADOCS")
@@ -40,13 +44,13 @@ class dbhandles:
         async def login_user(self,Deqcodelogger): # To login the user in the database
             try:
                 collections = self.database["DEQODE_USER_LIST"]
-                user = collections.find_one({"username":Deqcodelogger.username})
+                user = collections.find_one({"user_name":Deqcodelogger.username})
                 if user:
                     if bcrypt.checkpw(Deqcodelogger.password.encode('utf-8'), user["password"]):
                         session_token = create_session_token(Deqcodelogger.username,user["password"])
                         try:  
                            collections.update_one(
-                           {'username': user["username"]},
+                           {'user_name': user["user_name"]},
                             {
                              "$push": {
                                  f"session_{datetime.now()}": session_token
@@ -66,30 +70,39 @@ class dbhandles:
         async def get_users(self):
             pass
 
-        async def storing_circuit_info(self,username:str,circuit): #Storing Circuits
+        async def storing_circuit_info(self, username: str, circuit: dict):
             try:
-                collections = self.database["DEQODE_USER_LIST"]
-                user = collections.find_one({"username":username})
+                collections = self.database["DEQODE_CIRCUIT_CAPTURE"]
+                user = collections.find_one({"user_name": username})
                 if user:
                     collections.update_one(
-                        {'username': user["username"]},
-                        {
-                            "$push": {
-                                "circuit": circuit
-                            }
-                        },
-
+                        {'user_name': username, "circuits": circuit},
+                        {"$set": {"circuits": circuit}}
+                    )
+                    if collections.find_one({'user_name': username, "circuits": circuit}) is None:
+                      collections.update_one(
+                        {'user_name': username},
+                        {"$push": {"circuits": circuit}}
                     )
                 else:
-                    raise HTTPException(status_code=400,detail="User not found")
+                    raise HTTPException(status_code=400, detail="User not found")
+                return {"Message": "Circuit has been stored"}
             except Exception as e:
-                raise HTTPException(status_code=500,detail=f"{e}")
+                raise HTTPException(status_code=500, detail=f"{e}")
 
         async def releasing_circuit_info(self): #Deleted Circuits
             pass
   
-        async def get_circuit_info(self):
-            pass
+        async def get_circuit_info(self,username:str) -> dict:
+            try:
+                collections = self.database["DEQODE_CIRCUIT_CAPTURE"]
+                user = collections.find_one({"user_name": username})
+                if user:
+                    return user["circuits"]
+                else:
+                   raise HTTPException(status_code=400, detail="User not found")
+            except Exception as e:
+                raise HTTPException(status_code=500,detail=f"{e}")
          
         async def del_user_logs(self):
             pass
