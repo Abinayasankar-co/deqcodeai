@@ -3,7 +3,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.exceptions import HTTPException
 from services.algassertprod import QuantumCircuitGenerator
 from db.db_handler import dbhandles
-from db.datahandler import QuibitsGeneratorinput,DeqcodeUser,DeqcodeUserLogin,PreviousCircuits
+from db.datahandler import QuibitsGeneratorinput,DeqcodeUser,DeqcodeUserLogin,PreviousCircuits,CircuitViewer,PricingPlan
 from services.quirk_circuit_generator import QuantumLLM
 
 app = FastAPI()
@@ -19,6 +19,13 @@ app.add_middleware(
 @app.get("/health")
 def app_health():
     return {"health":"DeqcodeAI"}
+
+@app.get('/priceplan')
+def pricing_plan():
+   try:
+      return ["Free","Basic","Premium"]
+   except Exception as e:
+      raise HTTPException(status_code=500,detail=f"{e}")
 
 @app.post('/register')
 async def deqcode_user_registeration(DeqcodeUser : DeqcodeUser):
@@ -39,14 +46,18 @@ async def deqcode_user_login(DeqcodeUserLogin : DeqcodeUserLogin):
           raise HTTPException(status_code=500,detail=f"{e}")  
 
 @app.post('/viewcircuits')
-async def view_circuits():
+async def view_circuits(viewer : CircuitViewer):
     try:
       db = dbhandles()
-      circuits = await db.get_circuit_info()
-      return  PreviousCircuits(
-         status_code=200,
-         circuits=circuits
-      )
+      circuits = await db.get_circuit_info(viewer.username)
+      print(circuits)
+      if circuits:
+          return  PreviousCircuits(
+           status_code=200,
+           circuits=circuits
+          )
+      else:
+         raise HTTPException(status_code=400,detail="No circuits Found")
     except Exception as e:
       raise HTTPException(status_code=500,detail=f"{e}")
 
@@ -115,7 +126,8 @@ async def storing_circuit():
     url = "https://algassert.com/quirk#circuit=%7B%22cols%22%3A%20%5B%5B%7B%22id%22%3A%20%22H%22%2C%20%22targets%22%3A%20%5B0%5D%7D%5D%2C%20%5B%7B%22id%22%3A%20%22H%22%2C%20%22targets%22%3A%20%5B1%5D%7D%5D%2C%20%5B%7B%22id%22%3A%20%22Measure%22%2C%20%22targets%22%3A%20%5B0%5D%7D%5D%2C%20%5B%7B%22id%22%3A%20%22Measure%22%2C%20%22targets%22%3A%20%5B1%5D%7D%5D%5D%7D"
     db = dbhandles()
     circuit = {"Response":json_content,"url":url,"content":content}
-    result =  await db.storing_circuit_info("Abinayasankar",circuit)
+    #result =  await db.storing_circuit_info("Abinayasankar",circuit)
+    result =  await db.get_store_circuit("Abinayasankar",circuit)
     return result
    except Exception as e:
      raise HTTPException(status_code=500,detail=f"All is not fine{e}")  

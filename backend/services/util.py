@@ -33,7 +33,7 @@ def hash_password(password: str) -> str:
 def create_session_token(username: str) -> str:
     payload = {
         "sub" : username,
-        "iot" : datetime.now().isoformat(),
+        "iat" : datetime.now().isoformat(),
         "exp": datetime.now() + timedelta(hours=2)
     }
     token_secret = lambda username : ''.join(random.shuffle(list(username)))

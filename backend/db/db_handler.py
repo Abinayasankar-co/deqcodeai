@@ -70,19 +70,33 @@ class dbhandles:
         async def get_users(self):
             pass
 
-        async def storing_circuit_info(self, username: str, circuit: dict):
+        async def get_store_circuit(self,username : str,circuit : dict):
+            try:
+                collections = self.database["DEQODE_CIRCUIT_CAPTURE"] 
+                user = collections.find_one({"user_name": username}) 
+                if user: # Directly push the circuit to the user's circuits list, allowing duplicates 
+                    collections.update_one( {'user_name': username}, {"$push": {"circuits": circuit}}, upsert=True ) 
+                else: 
+                    raise HTTPException(status_code=400, detail="User not found")
+                return {"Message": "Circuit has been stored"}
+            except Exception as e:
+                raise HTTPException(status_code=500,detail=f"{e}")
+
+        async def storing_circuit_info(self, username: str, circuit: dict): # Testing Portal No Repetation of Circuits will be Allowed
             try:
                 collections = self.database["DEQODE_CIRCUIT_CAPTURE"]
                 user = collections.find_one({"user_name": username})
                 if user:
-                    collections.update_one(
-                        {'user_name': username, "circuits": circuit},
-                        {"$set": {"circuits": circuit}}
-                    )
+                    if not any(circuit == existing_circuit for existing_circuit in user.get("circuits",[])):
+                        collections.update_one(
+                         {'user_name': username, "circuits": circuit},
+                         {"$set": {"circuits": circuit}}
+                        )
                     if collections.find_one({'user_name': username, "circuits": circuit}) is None:
                       collections.update_one(
                         {'user_name': username},
-                        {"$push": {"circuits": circuit}}
+                        {"$push": {"circuits": circuit}},
+                        upsert=True
                     )
                 else:
                     raise HTTPException(status_code=400, detail="User not found")
@@ -108,9 +122,6 @@ class dbhandles:
             pass
          
         async def user_input_logs(self):
-            pass
-        
-        async def static_deqode_pricing_plans(self):
             pass
         
 

@@ -9,9 +9,6 @@ from services.prompt_manager import QuantumPrompt
 from services.util import extract_json_from_content
 from dotenv import load_dotenv
 
-
-load_dotenv()
-
 load_dotenv()
 
 api_key = os.environ["GROQ_API_KEY"]

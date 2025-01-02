@@ -1,19 +1,19 @@
 from pydantic import BaseModel
-from dataclasses import dataclass
 from fastapi import Form
+from typing import List
 
-@dataclass
+class PricingPlan(BaseModel):
+    status_code : int
+    pricing : List
+
 class PreviousCircuits(BaseModel):
     status_code : int 
-    circuits : list[dict] 
+    circuits : List[dict]
 
-
-@dataclass
 class QuibitsGeneratorinput(BaseModel):
     username : str = Form(...)
     statements : str = Form(...)
 
-@dataclass
 class DeqcodeUser(BaseModel):
    username : str = Form(...)
    password : str = Form(...)
@@ -26,12 +26,9 @@ class DeqcodeUser(BaseModel):
    preference : str = Form(...)
    dateofjoin : str = Form(...)
 
-@dataclass
 class DeqcodeUserLogin(BaseModel):
     username : str = Form(...)
     password : str = Form(...)
 
-
-@dataclass
 class CircuitViewer(BaseModel):
     username :str = Form(...)
