@@ -63,7 +63,7 @@ class dbhandles:
                     else:
                         raise HTTPException(status_code=500,detail="Invalid Password") 
                 else:
-                    return {"Message":"User not found"}
+                    raise HTTPException(status_code=400,detail="User not found")
             except Exception as e:
                 raise HTTPException(status_code=400,detail=f"User not found")
 

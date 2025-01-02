@@ -5,6 +5,7 @@ import Registration from './components/Registeration'
 import RegistrationError from './components/RegisterationError'
 import OtherError from './components/OtherError'
 import NotFound404 from './components/NotFoundError'
+import Login from './components/login'
 
 function App() {
   return (
@@ -15,6 +16,7 @@ function App() {
       <Route path='/registerion_error' element={<RegistrationError/>}/>
       <Route path='/error' element={<OtherError/>}/>
       <Route path='/canthandle' element={<NotFound404/>}/>
+      <Route path='/login' element={<Login/>}/>
      </Routes>
     </>
   )

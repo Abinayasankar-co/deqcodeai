@@ -30,6 +30,7 @@ function Registration() {
     e.preventDefault();
     console.log('Submitted Data:', formData);
     try {
+      localStorage.setItem('username', formData.username);
       const response = await fetch('http://localhost:8000/register', {
         method: 'POST',
         headers: {
@@ -37,7 +38,6 @@ function Registration() {
         },
         body: JSON.stringify(formData),
       });
-
       if (response.ok) {
         alert('Registration successful!');
       } else {

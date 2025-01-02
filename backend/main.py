@@ -52,7 +52,7 @@ async def view_circuits(viewer : CircuitViewer):
       circuits = await db.get_circuit_info(viewer.username)
       print(circuits)
       if circuits:
-          return  PreviousCircuits(
+          return PreviousCircuits(
            status_code=200,
            circuits=circuits
           )
@@ -71,66 +71,10 @@ async def design_circuit(QuiBitsGeneratorinput: QuibitsGeneratorinput):
       qc, quirk_url = QuantumCircuitGenerator.generate_circuit_from_json(resposnes)
       print(qc)
       result = {"Response":resposnes,"url":quirk_url,"content":resposnes.get("explanation")}
-      await db.storing_circuit_info(QuiBitsGeneratorinput.username,result)
-      return result
+      storage_circuit = await db.get_store_circuit(QuiBitsGeneratorinput.username,result)
+      if storage_circuit: return result
     except Exception as e:
       raise HTTPException(status_code=500,detail=f"{e}")
-
-# Testing not a valid api recorded for production - caution : Don't use in documentation
-@app.post('/store-circuit')
-async def storing_circuit():
-   try:
-    json_content = {
-     "Parameters": [
-         {
-             "n": 2,
-             "p": 0.5
-         }
-     ],
-     "gates": [
-        {
-              "gate": "H",
-             "qubit": 0
-         },
-         {
-            "gate": "H",
-             "qubit": 1
-         }, 
-         {
-            "gate": "RX",
-            "qubit": 0,
-            "angle": "acos(sqrt(p))"
-        },
-        {
-            "gate": "RX",
-            "qubit": 1,
-            "angle": "acos(sqrt(p))"
-        },
-        {
-            "gate": "CX",
-            "control_qubit": 0,
-            "target_qubit": 1
-        },
-        {
-            "gate": "Measure",
-            "qubit": 0
-        },
-        {
-            "gate": "Measure",
-            "qubit": 1
-        }
-        ],
-        "explanation": "This circuit generates a random number by applying Hadamard gates, RX gates with a probability p, and measuring the qubits."        
-     }
-    content = "This circuit generates a random number by applying Hadamard gates, entangling the qubits using CCX gate and measuring the qubits."
-    url = "https://algassert.com/quirk#circuit=%7B%22cols%22%3A%20%5B%5B%7B%22id%22%3A%20%22H%22%2C%20%22targets%22%3A%20%5B0%5D%7D%5D%2C%20%5B%7B%22id%22%3A%20%22H%22%2C%20%22targets%22%3A%20%5B1%5D%7D%5D%2C%20%5B%7B%22id%22%3A%20%22Measure%22%2C%20%22targets%22%3A%20%5B0%5D%7D%5D%2C%20%5B%7B%22id%22%3A%20%22Measure%22%2C%20%22targets%22%3A%20%5B1%5D%7D%5D%5D%7D"
-    db = dbhandles()
-    circuit = {"Response":json_content,"url":url,"content":content}
-    #result =  await db.storing_circuit_info("Abinayasankar",circuit)
-    result =  await db.get_store_circuit("Abinayasankar",circuit)
-    return result
-   except Exception as e:
-     raise HTTPException(status_code=500,detail=f"All is not fine{e}")  
 
 #Testing not a valid circuit api for production - caution : Don't use in documentation
 @app.post("/generate_circuit")

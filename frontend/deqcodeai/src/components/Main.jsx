@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Container, Row, Col } from 'react-bootstrap';
 import Navbar from './Navbar';
 import Sidebar from './Sidebar';
@@ -8,20 +8,36 @@ import ResultDisplay from './ResultDisplay';
 import { useNavigate } from 'react-router-dom';
 
 const Main = () => {
-  const [email, setEmail] = useState('');
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [messages, setMessages] = useState([]);
   const [result, setResult] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const navigate  = useNavigate();
+  
+  setTimeout( async() => {
+  const view_template = {
+    "username": localStorage.getItem('username')
+  }
+  useEffect(() => {
+    fetch('http://localhost:8000/viewcircuits',{
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(view_template)
+      })
+      .then((response) => response.json())
+      .then((data) => localStorage.setItem('circuits', JSON.stringify(data)))
+      .catch((error) => console.error('Error fetching data:', error));
+  }, [])}, 1000);
+
 
   const handleSubmit = async (message) => {
     setMessages([...messages, message]);
     const statements = {
-      'username': "Abinayasankar",
+      'username': localStorage.getItem('username'),
       'statements': message
     }
-
     try {
       setTimeout(async () => {
         setIsLoading(true);
@@ -52,7 +68,7 @@ const Main = () => {
   return (
     <>
     <Container fluid className="vh-100 p-0 bg-black">
-      <Navbar email={email} />
+      <Navbar username={localStorage.getItem('username')} />
       <Row className="h-100 g-0">
         <Sidebar
           isOpen={sidebarOpen}
