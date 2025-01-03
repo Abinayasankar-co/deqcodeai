@@ -3,7 +3,8 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.exceptions import HTTPException
 from services.algassertprod import QuantumCircuitGenerator
 from db.db_handler import dbhandles
-from db.datahandler import QuibitsGeneratorinput,DeqcodeUser,DeqcodeUserLogin,PreviousCircuits,CircuitViewer,PricingPlan
+from db.datahandler import QuibitsGeneratorinput,DeqcodeUser,DeqcodeUserLogin
+from db.datahandler import PreviousCircuits,CircuitViewer,PricingPlan,DeqcodeLoginCredentials
 from services.quirk_circuit_generator import QuantumLLM
 
 app = FastAPI()
@@ -23,7 +24,10 @@ def app_health():
 @app.get('/priceplan')
 def pricing_plan():
    try:
-      return ["Free","Basic","Premium"]
+      return PricingPlan(
+         status_code=200,
+         pricing=["free","premium","enterprise"]
+      )
    except Exception as e:
       raise HTTPException(status_code=500,detail=f"{e}")
 
@@ -41,7 +45,11 @@ async def deqcode_user_login(DeqcodeUserLogin : DeqcodeUserLogin):
         try:
           db_user = dbhandles()
           logger_message = await db_user.login_user(DeqcodeUserLogin)
-          return logger_message
+          return DeqcodeLoginCredentials(
+             message=logger_message.get("message"),
+             username=logger_message.get("username"),
+             session_key=logger_message.get("session_key")
+          )
         except Exception as e:
           raise HTTPException(status_code=500,detail=f"{e}")  
 
@@ -49,13 +57,20 @@ async def deqcode_user_login(DeqcodeUserLogin : DeqcodeUserLogin):
 async def view_circuits(viewer : CircuitViewer):
     try:
       db = dbhandles()
-      circuits = await db.get_circuit_info(viewer.username)
-      print(circuits)
-      if circuits:
+      code , circuits = await db.get_circuit_info(viewer.username)
+      print(code, circuits)
+      if code == 200:
           return PreviousCircuits(
-           status_code=200,
-           circuits=circuits
+           status_code= code,
+           circuits=circuits,
+           message="Successfull"
           )
+      if code == 404:
+         return PreviousCircuits(
+            status_code=404,
+            circuits=None,
+            message=circuits.get("Message")
+         )
       else:
          raise HTTPException(status_code=400,detail="No circuits Found")
     except Exception as e:

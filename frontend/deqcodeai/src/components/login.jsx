@@ -1,10 +1,19 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../AuthContext';
 
 const Login = () => {
+    const {setIsAuthenticated, setUsername} = useAuth();
     const [formData, setFormData] = useState({ username: '', password: '' });
     const [error, setError] = useState('');
     const navigate = useNavigate();
+
+    useEffect(()=>{
+        localStorage.removeItem('session_token');
+        localStorage.removeItem('username');
+        setIsAuthenticated(false);
+        setUsername('');
+    },[setIsAuthenticated, setUsername])
 
     const handleChange = (e) => {
         const {name, value } = e.target;
@@ -13,6 +22,7 @@ const Login = () => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+        console.log(formData);
         try {
             const response = await fetch('http://localhost:8000/login', {
                 method: 'POST',
@@ -24,16 +34,19 @@ const Login = () => {
 
             if (response.ok) {
                 const data = await response.json();
-                localStorage.setItem('session_token', data.session_token);
-                localStorage.setItem('user_data', JSON.stringify(data));
+                localStorage.setItem('session_token', data.session_key);
+                localStorage.setItem('username', formData.username);
+                setIsAuthenticated(true);
+                setUsername(formData.username);
                 navigate('/design');
             } else {
                 setError('Invalid username or password');
+                //navigate('/registration_error');
             }
         } catch (error) {
             console.error('Error:', error);
             setError('An error occurred. Please try again later.');
-            navigate('/login_error');
+            navigate('/registration_error');
         }
     };
 

@@ -14,23 +14,28 @@ const Main = () => {
   const [isLoading, setIsLoading] = useState(false);
   const navigate  = useNavigate();
   
-  setTimeout( async() => {
+  
   const view_template = {
     "username": localStorage.getItem('username')
   }
   useEffect(() => {
-    fetch('http://localhost:8000/viewcircuits',{
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(view_template)
-      })
-      .then((response) => response.json())
-      .then((data) => localStorage.setItem('circuits', JSON.stringify(data)))
-      .catch((error) => console.error('Error fetching data:', error));
-  }, [])}, 1000);
+      try{
+        fetch('http://localhost:8000/viewcircuits',{
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(view_template)
+          })
+          .then((response) => response.json())
+          .then((data) => localStorage.setItem('circuits', JSON.stringify(data)))
+          .catch((error) => console.error('Error fetching data:', error));
 
+      }catch{
+          console.error('Error fetching data');
+      }
+    },
+  [])
 
   const handleSubmit = async (message) => {
     setMessages([...messages, message]);
@@ -41,7 +46,7 @@ const Main = () => {
     try {
       setTimeout(async () => {
         setIsLoading(true);
-        console.log(message);
+        console.log(statements); //Ref
         const response = await fetch('http://localhost:8000/design-circuit', {
           method: 'POST',
           headers: {
@@ -49,9 +54,12 @@ const Main = () => {
           },
           body: JSON.stringify(statements),
         });
-  
+        if (!response.ok) {
+          navigate('/error');
+          throw new Error('Network response was not ok');
+        }
         const data = await response.json();
-        console.log(data)
+        console.log(data) //Ref
         setResult(data);
       },1000)
       if(data.error){
@@ -73,7 +81,8 @@ const Main = () => {
         <Sidebar
           isOpen={sidebarOpen}
           toggle={() => setSidebarOpen(!sidebarOpen)}
-          chats={[{ title: 'Previous Chat 1' }, { title: 'Previous Chat 2' }]}
+          chats = {localStorage.getItem('circuits')}
+          //chats={[{ title: 'Previous Chat 1' }, { title: 'Previous Chat 2' }]}
         />
         <Col
           className="h-100 d-flex flex-column"

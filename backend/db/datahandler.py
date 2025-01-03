@@ -1,6 +1,7 @@
 from pydantic import BaseModel
 from fastapi import Form
 from typing import List
+from typing import Optional
 
 class PricingPlan(BaseModel):
     status_code : int
@@ -8,7 +9,13 @@ class PricingPlan(BaseModel):
 
 class PreviousCircuits(BaseModel):
     status_code : int 
-    circuits : List[dict]
+    circuits : Optional[List[dict]]
+    message : Optional[str] 
+
+class DeqcodeLoginCredentials(BaseModel):
+    message : str
+    username : str 
+    session_key : str
 
 class QuibitsGeneratorinput(BaseModel):
     username : str = Form(...)

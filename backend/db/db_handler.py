@@ -41,31 +41,31 @@ class dbhandles:
             except Exception as e:
                 raise  HTTPException(status_code=500,detail=f"{e}")
             
-        async def login_user(self,Deqcodelogger): # To login the user in the database
-            try:
-                collections = self.database["DEQODE_USER_LIST"]
-                user = collections.find_one({"user_name":Deqcodelogger.username})
-                if user:
-                    if bcrypt.checkpw(Deqcodelogger.password.encode('utf-8'), user["password"]):
-                        session_token = create_session_token(Deqcodelogger.username,user["password"])
-                        try:  
-                           collections.update_one(
-                           {'user_name': user["user_name"]},
-                            {
-                             "$push": {
-                                 f"session_{datetime.now()}": session_token
-                             }
-                            }
-                          )
-                        except Exception as e:
-                            raise HTTPException(status_code=500,detail=f"Session Key have not been Updated to the DB{e}") 
-                        return {"Message":"You are logged in","sessionkey":session_token}
-                    else:
-                        raise HTTPException(status_code=500,detail="Invalid Password") 
-                else:
-                    raise HTTPException(status_code=400,detail="User not found")
-            except Exception as e:
-                raise HTTPException(status_code=400,detail=f"User not found")
+        async def login_user(self, Deqcodelogger):
+            try: 
+                collections = self.database["DEQODE_USER_LIST"] 
+                user = collections.find_one({"user_name": Deqcodelogger.username}) 
+                if user: 
+                    if bcrypt.checkpw(Deqcodelogger.password.encode('utf-8'), user["password"].encode('utf-8')): 
+                        try: 
+                            session_token = create_session_token(Deqcodelogger.username) 
+                            collections.update_one(
+                                {'user_name': user["user_name"]},
+                                { "$push": { "tokens": [session_token , datetime.now()] } } 
+                            ) 
+                            return  {
+                                       "message": "Login successful",
+                                       "username": user["user_name"], 
+                                       "session_key": session_token
+                                    } 
+                        except Exception as e: 
+                            raise HTTPException(status_code=500, detail=f"Session key not updated in the DB: {e}") 
+                    else: 
+                        raise HTTPException(status_code=401, detail="Invalid password") 
+                else: 
+                    raise HTTPException(status_code=404, detail="User not found") 
+            except Exception as e: 
+                raise HTTPException(status_code=500, detail=f"Error during login: {e}")
 
         async def get_users(self):
             pass
@@ -112,9 +112,9 @@ class dbhandles:
                 collections = self.database["DEQODE_CIRCUIT_CAPTURE"]
                 user = collections.find_one({"user_name": username})
                 if user:
-                    return user["circuits"]
+                    return 200 , user["circuits"]
                 else:
-                   raise HTTPException(status_code=400, detail="User not found")
+                   return 404 ,{"Message":"No Circuits Found for this User"}
             except Exception as e:
                 raise HTTPException(status_code=500,detail=f"{e}")
          

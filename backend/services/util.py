@@ -30,13 +30,11 @@ def hash_password(password: str) -> str:
         except Exception as e:
             raise HTTPException(status_code=500, detail=f"While Processing Request :{e}") 
         
-def create_session_token(username: str) -> str:
-    payload = {
-        "sub" : username,
-        "iat" : datetime.now().isoformat(),
-        "exp": datetime.now() + timedelta(hours=2)
-    }
-    token_secret = lambda username : ''.join(random.shuffle(list(username)))
-    token = jwt.encode(payload, token_secret, algorithm="SHA256")
-    return token
-        
+def create_session_token(username: str) -> str: 
+     try: 
+        payload = { "sub": username, "iat": datetime.now(), "exp": datetime.now() + timedelta(hours=2) }
+        token_secret = ''.join(random.sample(username, len(username))) 
+        token = jwt.encode(payload, token_secret, algorithm="HS256") 
+        return token 
+     except Exception as e: 
+          raise HTTPException(status_code=500, detail=f"Error creating session token: {e}")

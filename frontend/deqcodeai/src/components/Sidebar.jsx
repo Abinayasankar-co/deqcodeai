@@ -1,10 +1,7 @@
-//import { useState,useEffect} from "react";  // Need When we fetch the data and we display them 
 import { ChevronLeftIcon, ChevronRightIcon } from "lucide-react";
 
-const Sidebar = ({ isOpen, toggle,chats}) => {
-   //const [chats, setChats] = useState({});
-  //setTimeout(async() => {},1000);
-
+const Sidebar = ({ isOpen, toggle, chats }) => {
+  console.log(chats)
   return (
     <div>
       <button
@@ -25,16 +22,16 @@ const Sidebar = ({ isOpen, toggle,chats}) => {
         }`}
       >
         <div className="border-b border-gray-700 p-4 text-lg font-bold text-orange-400">
-          Circuit Design History
+          Your Circuit's History
         </div>
         <nav className="flex flex-col">
-          {chats.map((chat, index) => (
+          {chats && chats.circuits && chats.circuits.map((circuit, index) => (
             <a
               key={index}
               href={`#chat-${index}`}
               className="block px-4 py-3 border-b border-gray-800 hover:bg-gray-800 hover:text-orange-300 transition"
             >
-              {chat.title}
+              {circuit.Response.explanation}
             </a>
           ))}
         </nav>
