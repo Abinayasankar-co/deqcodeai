@@ -3,8 +3,8 @@ import { Container, Row, Col } from 'react-bootstrap';
 import Navbar from './Navbar';
 import Sidebar from './Sidebar';
 import Spinner from './Spinner';
-import ChatInterface from './ChatInterface';
 import ResultDisplay from './ResultDisplay';
+import ChatInterface from './ChatInterface';
 import { useNavigate } from 'react-router-dom';
 
 const Main = () => {
@@ -15,13 +15,12 @@ const Main = () => {
   const [isLoading, setIsLoading] = useState(false);
   const navigate  = useNavigate();
   
-  
   const view_template = {
     "username": localStorage.getItem('username')
   }
   useEffect(() => {
       try{
-        fetch('http://localhost:8000/viewcircuits',{
+        fetch('/api/viewcircuits',{
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -83,11 +82,11 @@ const Main = () => {
         <Sidebar
           isOpen={sidebarOpen}
           toggle={() => setSidebarOpen(!sidebarOpen)}
+          //chats = {localStorage.getItem('circuits')}
           chats = {localStorage.getItem('circuits')}
           setCurrentCircuit={setCurrentCircuit}
           //chats={[{ title: 'Previous Chat 1' }, { title: 'Previous Chat 2' }]}
         />
-        
         <Col
           className="h-100 d-flex flex-column"
           style={{
