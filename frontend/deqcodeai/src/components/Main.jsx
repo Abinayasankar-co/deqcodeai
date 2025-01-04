@@ -8,6 +8,7 @@ import ResultDisplay from './ResultDisplay';
 import { useNavigate } from 'react-router-dom';
 
 const Main = () => {
+  const [currentCircuit, setCurrentCircuit] = useState(null);
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [messages, setMessages] = useState([]);
   const [result, setResult] = useState(null);
@@ -47,7 +48,7 @@ const Main = () => {
       setTimeout(async () => {
         setIsLoading(true);
         console.log(statements); //Ref
-        const response = await fetch('http://localhost:8000/design-circuit', {
+        const response = await fetch('/api/design-circuit', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -73,6 +74,7 @@ const Main = () => {
     }
   };
 
+
   return (
     <>
     <Container fluid className="vh-100 p-0 bg-black">
@@ -82,8 +84,10 @@ const Main = () => {
           isOpen={sidebarOpen}
           toggle={() => setSidebarOpen(!sidebarOpen)}
           chats = {localStorage.getItem('circuits')}
+          setCurrentCircuit={setCurrentCircuit}
           //chats={[{ title: 'Previous Chat 1' }, { title: 'Previous Chat 2' }]}
         />
+        
         <Col
           className="h-100 d-flex flex-column"
           style={{

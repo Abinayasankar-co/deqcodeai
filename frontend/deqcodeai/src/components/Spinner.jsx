@@ -11,7 +11,7 @@ const Spinner = () => (
         variant="warning"
         style={{ width: '3rem', height: '3rem' }}
       />
-      <p className="mt-3 text-warning fs-5 fw-semibold">
+      <p className="mt-3 text-lg fs-5 fw-semibold">
         The Circuit is Preparing...
       </p>
     </div>

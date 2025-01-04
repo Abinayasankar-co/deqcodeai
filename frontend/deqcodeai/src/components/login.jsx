@@ -17,14 +17,14 @@ const Login = () => {
 
     const handleChange = (e) => {
         const {name, value } = e.target;
-        setFormData({ ...formData, [name]: value });
+        setFormData({ ...formData, [name]: value.trim()});
     };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
         console.log(formData);
         try {
-            const response = await fetch('http://localhost:8000/login', {
+            const response = await fetch('/api/login', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -68,6 +68,7 @@ const Login = () => {
                             required
                         />
                     </div>
+                    {/*Need to write a unique password validation */}
                     <div>
                         <label className="block text-sm font-medium text-gray-300">Password</label>
                         <input

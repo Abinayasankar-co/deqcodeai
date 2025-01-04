@@ -1,5 +1,7 @@
-from fastapi import FastAPI
+import jwt
+from fastapi import FastAPI , Depends
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.security import OAuth2PasswordBearer
 from fastapi.exceptions import HTTPException
 from services.algassertprod import QuantumCircuitGenerator
 from db.db_handler import dbhandles
@@ -16,6 +18,9 @@ app.add_middleware(
     allow_methods=["*"], 
     allow_headers=["*"],
 )
+
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
+
 
 @app.get("/health")
 def app_health():
@@ -52,13 +57,24 @@ async def deqcode_user_login(DeqcodeUserLogin : DeqcodeUserLogin):
           )
         except Exception as e:
           raise HTTPException(status_code=500,detail=f"{e}")  
+        
+#Need more work on it     
+@app.get("/api/verify-token")
+async def verify_token(token: str = Depends(oauth2_scheme)):
+    try:
+        payload = jwt.decode(token, algorithms=["HS256"]) #Secret_key needs to be added
+        return {"username": payload.get("sub")}
+    except jwt.ExpiredSignatureError:
+        raise HTTPException(status_code=401, detail="Token expired")
+    except jwt.InvalidTokenError:
+        raise HTTPException(status_code=401, detail="Invalid token")
 
 @app.post('/viewcircuits')
 async def view_circuits(viewer : CircuitViewer):
     try:
       db = dbhandles()
       code , circuits = await db.get_circuit_info(viewer.username)
-      print(code, circuits)
+      #print(code, circuits)
       if code == 200:
           return PreviousCircuits(
            status_code= code,
