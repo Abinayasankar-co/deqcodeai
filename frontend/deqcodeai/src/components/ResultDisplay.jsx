@@ -3,9 +3,6 @@ import { Card, Container, Row, Col } from 'react-bootstrap';
 import CodeEditor from './CodeEditor';
 
 const ResultDisplay = ({ url, content }) => {
-  function handleExecute(){
-    console.log("Execute the code");
-  }
   return(
   <Container fluid className="px-12 py-3 space-y-4">
   <Row className="mb-4">
