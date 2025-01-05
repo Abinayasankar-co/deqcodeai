@@ -1,61 +1,12 @@
+from docs.supportivegates import ElementsRequired
+
 class QuantumPrompt:
-    @staticmethod
-    def get_prompt(statement : str)->str:
-        supported_gates = {
-            "H", "X", "Y", "Z", "S", "T", "CX", "CCX", "SWAP", "RX", "RY", "RZ",
-            "Measure", "InputA", "InputB", "InputC"
-        }
-        example_prompt = """
-        {
-          "Parameters": [
-             {
-              "n": 3,
-              "p": 0.5
-             }
-            ],
-          "gates": [
-            {
-             "gate": "H",
-             "qubit": 0
-            },
-            {
-             "gate": "RX",
-             "qubit": 0,
-             "angle": "acos(sqrt(p))"
-            },
-            {
-             "gate": "Measure",
-             "qubit": 0
-            },
-            {
-             "gate": "RY",
-             "params": [0.5],
-             "qubit": 2
-            },
-            {
-             "gate": "CCX",
-             "control_qubit": 0,
-             "target_qubit": 1
-            },
-          ],
-        "explanation": "This circuit generates a random number by applying Hadamard gates, RX gates with a probability p, and measuring the qubits.The CX gate is used to entangle the qubits."
-        }
-        """
-        json_structured_ouput = """
-           {{
-                   "Parameters":[{{
-                             0:{parameters[0]}
-                             1:{parameters[1]}
-                             }}
-                            ],
-                   "gates":[
-                             0:{gates[0]}
-                             1:{gates[1]}            
-                          ],
-                   "explanation":"This contains the explanation of the code and circuit"
-                }}
- 
-        """
+    def __init__(self):
+        self.supportive_gates = ElementsRequired()
+        
+    def get_prompt(self,statement : str)->str:
+        supported_gates = self.supportive_gates.supportive_gates()
+        example_prompt , json_structured_ouput = self.supportive_gates.sample_prompt()
         return f""" Imagine yourself as a Quantum Circuit designer and load more complex quantum circuits at your Cache like shore algorithm and so on.
                     You must Generate circuits w.r.t these gates {supported_gates} and provide only the explanation for the circuit.
                     Provide a circuit gates for quantum circuit for generating a solution for the given problem statement {statement}.

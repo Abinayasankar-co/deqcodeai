@@ -3,11 +3,12 @@ from fastapi import FastAPI , Depends
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.security import OAuth2PasswordBearer
 from fastapi.exceptions import HTTPException
-from services.algassertprod import QuantumCircuitGenerator
 from db.db_handler import dbhandles
-from db.datahandler import QuibitsGeneratorinput,DeqcodeUser,DeqcodeUserLogin
+from db.datahandler import QuibitsGeneratorinput,DeqcodeUser,DeqcodeUserLogin,CodeRequest
 from db.datahandler import PreviousCircuits,CircuitViewer,PricingPlan,DeqcodeLoginCredentials
 from services.quirk_circuit_generator import QuantumLLM
+from services.simulation import QuantumSimulator
+from services.algassertprod import QuantumCircuitGenerator
 
 app = FastAPI()
 
@@ -106,6 +107,21 @@ async def design_circuit(QuiBitsGeneratorinput: QuibitsGeneratorinput):
       if storage_circuit: return result
     except Exception as e:
       raise HTTPException(status_code=500,detail=f"{e}")
+
+@app.post("/simulate")
+async def simulate_code(request: CodeRequest):
+    simulator = QuantumSimulator()
+
+    if not request.code or not request.simulator:
+        raise HTTPException(status_code=400, detail="Code and simulator type are required")
+
+    try:
+        result = simulator.simulate(request.code, request.simulator)
+        return {"result": result}
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail=str(e))
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
 
 #Testing not a valid circuit api for production - caution : Don't use in documentation
 @app.post("/generate_circuit")

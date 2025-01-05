@@ -6,6 +6,9 @@ from typing import Optional
 class PricingPlan(BaseModel):
     status_code : int
     pricing : List
+class CodeRequest(BaseModel):
+    code: str
+    simulator: str
 
 class PreviousCircuits(BaseModel):
     status_code : int 
