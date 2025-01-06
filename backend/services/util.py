@@ -30,10 +30,10 @@ def hash_password(password: str) -> str:
         except Exception as e:
             raise HTTPException(status_code=500, detail=f"While Processing Request :{e}") 
         
-def create_session_token(username: str) -> str: 
+def create_session_token(username: str, SECRET_KEY: str) -> str: 
      try: 
         payload = { "sub": username, "iat": datetime.now(), "exp": datetime.now() + timedelta(hours=2) }
-        token_secret = ''.join(random.sample(username, len(username))) 
+        token_secret = SECRET_KEY
         token = jwt.encode(payload, token_secret, algorithm="HS256") 
         return token 
      except Exception as e: 

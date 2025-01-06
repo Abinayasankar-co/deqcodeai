@@ -1,12 +1,10 @@
-from docs.supportivegates import ElementsRequired
+from services.supportivegates import ElementsRequired
 
 class QuantumPrompt:
-    def __init__(self):
-        self.supportive_gates = ElementsRequired()
-        
-    def get_prompt(self,statement : str)->str:
-        supported_gates = self.supportive_gates.supportive_gates()
-        example_prompt , json_structured_ouput = self.supportive_gates.sample_prompt()
+    def get_prompt(statement : str)->str:
+        supportive_gates = ElementsRequired()
+        supported_gates = supportive_gates.supportive_gates()
+        example_prompt , json_structured_ouput = supportive_gates.sample_prompt()
         return f""" Imagine yourself as a Quantum Circuit designer and load more complex quantum circuits at your Cache like shore algorithm and so on.
                     You must Generate circuits w.r.t these gates {supported_gates} and provide only the explanation for the circuit.
                     Provide a circuit gates for quantum circuit for generating a solution for the given problem statement {statement}.

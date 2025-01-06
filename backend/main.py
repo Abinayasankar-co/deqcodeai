@@ -1,4 +1,5 @@
 import jwt
+import secrets
 from fastapi import FastAPI , Depends
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.security import OAuth2PasswordBearer
@@ -9,8 +10,11 @@ from db.datahandler import PreviousCircuits,CircuitViewer,PricingPlan,DeqcodeLog
 from services.quirk_circuit_generator import QuantumLLM
 from services.simulation import QuantumSimulator
 from services.algassertprod import QuantumCircuitGenerator
+from services.util import create_session_token
 
 app = FastAPI()
+secret = secrets.token_hex(32)
+SECRET_KEY = secret
 
 app.add_middleware(
     CORSMiddleware,
@@ -51,19 +55,23 @@ async def deqcode_user_login(DeqcodeUserLogin : DeqcodeUserLogin):
         try:
           db_user = dbhandles()
           logger_message = await db_user.login_user(DeqcodeUserLogin)
+          if not logger_message:
+              raise HTTPException(status_code=400,detail="Incorrect email or password")
+          username = logger_message.get("username")
+          token = create_session_token(username,SECRET_KEY)
           return DeqcodeLoginCredentials(
-             message=logger_message.get("message"),
+             message="Login Successful",
              username=logger_message.get("username"),
-             session_key=logger_message.get("session_key")
+             session_key=token
           )
         except Exception as e:
           raise HTTPException(status_code=500,detail=f"{e}")  
         
 #Need more work on it     
-@app.get("/api/verify-token")
+@app.get("/verify-token")
 async def verify_token(token: str = Depends(oauth2_scheme)):
     try:
-        payload = jwt.decode(token, algorithms=["HS256"]) #Secret_key needs to be added
+        payload = jwt.decode(token,SECRET_KEY, algorithms=["HS256"]) #Secret_key needs to be added
         return {"username": payload.get("sub")}
     except jwt.ExpiredSignatureError:
         raise HTTPException(status_code=401, detail="Token expired")

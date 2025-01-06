@@ -75,11 +75,13 @@ gates_avail = ["Measure","|0⟩⟨0|","|1⟩⟨1|","•","◦","Density","Densit
 example_prompt = """{"Parameters":[{"n":3,"p":0.5}],"gates":[{"gate":"H","qubit":0},{"gate":"RX","qubit":0,"angle":"acos(sqrt(p))"},{"gate":"Measure","qubit":0},{"gate":"RY","params":[0.5],"qubit":2},{"gate":"CCX","control_qubit":0,"target_qubit":1},],"explanation":"This circuit generates a random number by applying Hadamard gates, RX gates with a probability p, and measuring the qubits.The CX gate is used to entangle the qubits."}"""
 json_structured_ouput = """ {{"Parameters":[{{0:{parameters[0]}1:{parameters[1]}}}],"gates":[0:{gates[0]}1:{gates[1]}],"explanation":"This contains the explanation of the code and circuit"}}"""
 class ElementsRequired:
-    def supportive_gates():
+    def __init__(self):
+        pass
+    def supportive_gates(self):
        return gates_avail
-    def check_gate_availability(gate_name: str)-> bool:
+    def check_gate_availability(self,gate_name: str)-> bool:
         if gate_name in gates_avail: return True
         else : return False 
-    def sample_prompt():
+    def sample_prompt(self):
         return example_prompt , json_structured_ouput
     

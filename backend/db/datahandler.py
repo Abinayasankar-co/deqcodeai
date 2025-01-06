@@ -2,6 +2,7 @@ from pydantic import BaseModel
 from fastapi import Form
 from typing import List
 from typing import Optional
+from datetime import datetime
 
 class PricingPlan(BaseModel):
     status_code : int
@@ -9,7 +10,6 @@ class PricingPlan(BaseModel):
 class CodeRequest(BaseModel):
     code: str
     simulator: str
-
 class PreviousCircuits(BaseModel):
     status_code : int 
     circuits : Optional[List[dict]]
@@ -34,7 +34,9 @@ class DeqcodeUser(BaseModel):
    review : str = Form(...)
    notesbyuser : str = Form(...)
    preference : str = Form(...)
-   dateofjoin : str = Form(...)
+   created_dt: datetime = datetime.now()
+   modified_by: Optional[str] = None
+   modified_dt: Optional[datetime] = None
 
 class DeqcodeUserLogin(BaseModel):
     username : str = Form(...)

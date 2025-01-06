@@ -33,7 +33,9 @@ class dbhandles:
                "circuit_count": circuit_count,
                "Review": deqcodeuser.review,
                "Notesbyuser":deqcodeuser.notesbyuser,
-               "Dateofjoin": deqcodeuser.dateofjoin
+               "created_dt": deqcodeuser.created_dt,
+               "modified_by":deqcodeuser.modified_by,
+               "modified_dt":deqcodeuser.modified_dt
              } 
              insert_deqcode_user = collections.insert_one(user_document)
              if insert_deqcode_user.acknowledged:
@@ -47,19 +49,7 @@ class dbhandles:
                 user = collections.find_one({"user_name": Deqcodelogger.username}) 
                 if user: 
                     if bcrypt.checkpw(Deqcodelogger.password.encode('utf-8'), user["password"].encode('utf-8')): 
-                        try: 
-                            session_token = create_session_token(Deqcodelogger.username) 
-                            collections.update_one(
-                                {'user_name': user["user_name"]},
-                                { "$push": { "tokens": [session_token , datetime.now()] } } 
-                            ) 
-                            return  {
-                                       "message": "Login successful",
-                                       "username": user["user_name"], 
-                                       "session_key": session_token
-                                    } 
-                        except Exception as e: 
-                            raise HTTPException(status_code=500, detail=f"Session key not updated in the DB: {e}") 
+                            return  {"username": user["user_name"]} 
                     else: 
                         raise HTTPException(status_code=401, detail="Invalid password") 
                 else: 
@@ -126,3 +116,12 @@ class dbhandles:
         
 
 
+""""
+session_token = create_session_token(Deqcodelogger.username) 
+                            collections.update_one(
+                                {'user_name': user["user_name"]},
+                                { "$push": { "tokens": [session_token , datetime.now()] } } 
+                            ) 
+
+
+"""
