@@ -57,9 +57,6 @@ class dbhandles:
             except Exception as e: 
                 raise HTTPException(status_code=500, detail=f"Error during login: {e}")
 
-        async def get_users(self):
-            pass
-
         async def get_store_circuit(self,username : str,circuit : dict):
             try:
                 collections = self.database["DEQODE_CIRCUIT_CAPTURE"] 
@@ -67,7 +64,7 @@ class dbhandles:
                 if user: # Directly push the circuit to the user's circuits list, allowing duplicates 
                     collections.update_one( {'user_name': username}, {"$push": {"circuits": circuit}}, upsert=True ) 
                 else: 
-                    raise HTTPException(status_code=400, detail="User not found")
+                    collections.insert_one({"username":username,"circuits":circuit})
                 return {"Message": "Circuit has been stored"}
             except Exception as e:
                 raise HTTPException(status_code=500,detail=f"{e}")
@@ -94,9 +91,6 @@ class dbhandles:
             except Exception as e:
                 raise HTTPException(status_code=500, detail=f"{e}")
 
-        async def releasing_circuit_info(self): #Deleted Circuits
-            pass
-  
         async def get_circuit_info(self,username:str) -> dict:
             try:
                 collections = self.database["DEQODE_CIRCUIT_CAPTURE"]
@@ -114,6 +108,12 @@ class dbhandles:
         async def user_input_logs(self):
             pass
         
+        async def get_users(self):
+            pass
+
+        async def releasing_circuit_info(self): #Deleted Circuits
+            pass
+  
 
 
 """"

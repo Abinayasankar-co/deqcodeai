@@ -38,3 +38,13 @@ def create_session_token(username: str, SECRET_KEY: str) -> str:
         return token 
      except Exception as e: 
           raise HTTPException(status_code=500, detail=f"Error creating session token: {e}")
+     
+def remove_code(json_data: dict):
+    try:
+        removed_value = None
+        if "code" in json_data:
+          removed_value = json_data.pop("code")
+        print(removed_value , "-", json_data)
+        return removed_value, json_data
+    except Exception as e:
+        raise HTTPException(status_code=500,detail=f"Error in removing:{e}")

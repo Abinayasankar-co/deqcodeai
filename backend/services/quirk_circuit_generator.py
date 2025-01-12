@@ -29,17 +29,19 @@ class QuirkCircuitGenerator:
             raise ValueError(f"Gate '{gate}' is not supported by Quirk.")
 
     def add_gate(self, gate, targets, controls=None, params=None):
-        self.validate_gate(gate)
-        all_indices = (targets if targets else []) + (controls if controls else [])
-        if any(index >= self.qubit_count for index in all_indices):
-            raise ValueError("Target or control index out of range.")
-        gate_dict = {"id": gate, "targets": targets}
-        if controls:
-            gate_dict["controls"] = controls
-        if params:
-            gate_dict["params"] = params
-        self.circuit.append([gate_dict])
-
+        try:
+            self.validate_gate(gate)
+            all_indices = (targets if targets else []) + (controls if controls else [])
+            if any(index >= self.qubit_count for index in all_indices):
+              raise ValueError("Target or control index out of range.")
+            gate_dict = {"id": gate, "targets": targets}
+            if controls:
+              gate_dict["controls"] = controls
+            if params:
+              gate_dict["params"] = params
+            self.circuit.append([gate_dict])
+        except Exception as e:
+            raise HTTPException(status_code=500, detail="Error While executing json")
     def generate_json(self):
         return json.dumps({"cols": self.circuit}, indent=2)
 
@@ -62,6 +64,7 @@ class QuantumLLM:
             response_schemas = [
                 ResponseSchema(name="Parameter", description="Generate the parameter as per the prmpt"),
                 ResponseSchema(name="gates", description="Generate the gates as per the prompt"),
+                ResponseSchema(name="code",description="The Relative Qiskit code for the circuit should be generated"),
                 ResponseSchema(name="explanation", description="This contains the explanation of the code and circuit")
             ]
 
@@ -78,13 +81,13 @@ class QuantumLLM:
             ]
             response = self.quantum.invoke(messages, model="llama3-8b-8192", temperature=0.5, max_tokens=3000, top_p=1)
             content_str = response.content
-            print(content_str)
+            #print(content_str)
             try:
                 #content = json.loads(content_str)  
                 content = extract_json_from_content(content_str)
             except json.JSONDecodeError as json_err:
                 raise HTTPException(status_code=500, detail=f"JSON decode error: {json_err}")
-            print(content)
+            #print(content)
             return content
         except Exception as e:
             raise HTTPException(status_code=500, detail=f"{e}")

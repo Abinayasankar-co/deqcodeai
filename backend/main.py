@@ -10,7 +10,7 @@ from db.datahandler import PreviousCircuits,CircuitViewer,PricingPlan,DeqcodeLog
 from services.quirk_circuit_generator import QuantumLLM
 from services.simulation import QuantumSimulator
 from services.algassertprod import QuantumCircuitGenerator
-from services.util import create_session_token
+from services.util import create_session_token , remove_code
 
 app = FastAPI()
 secret = secrets.token_hex(32)
@@ -106,23 +106,25 @@ async def design_circuit(QuiBitsGeneratorinput: QuibitsGeneratorinput):
     try:
       quantum_verifier = QuantumLLM()
       db = dbhandles()
-      print(QuiBitsGeneratorinput.statements)
+      #print(QuiBitsGeneratorinput.statements)
       resposnes = quantum_verifier.llm_request(QuiBitsGeneratorinput.statements)
-      qc, quirk_url = QuantumCircuitGenerator.generate_circuit_from_json(resposnes)
-      print(qc)
-      result = {"Response":resposnes,"url":quirk_url,"content":resposnes.get("explanation")}
+      try:
+        code , response = remove_code(resposnes)
+        qc, quirk_url = QuantumCircuitGenerator.generate_circuit_from_json(response)
+        #print(qc)
+      except Exception as e:
+          raise HTTPException(status_code=500, detail=f"Error Qiskit:{e}")
+      result = {"Response":resposnes,"url":quirk_url,"code":code,"content":resposnes.get("explanation")}
       storage_circuit = await db.get_store_circuit(QuiBitsGeneratorinput.username,result)
       if storage_circuit: return result
     except Exception as e:
-      raise HTTPException(status_code=500,detail=f"{e}")
+      raise HTTPException(status_code=500,detail=f"Error: {e}")
 
 @app.post("/simulate")
 async def simulate_code(request: CodeRequest):
     simulator = QuantumSimulator()
-
     if not request.code or not request.simulator:
         raise HTTPException(status_code=400, detail="Code and simulator type are required")
-
     try:
         result = simulator.simulate(request.code, request.simulator)
         return {"result": result}
