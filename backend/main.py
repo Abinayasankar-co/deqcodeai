@@ -106,7 +106,7 @@ async def design_circuit(QuiBitsGeneratorinput: QuibitsGeneratorinput):
     try:
       quantum_verifier = QuantumLLM()
       db = dbhandles()
-      #print(QuiBitsGeneratorinput.statements)
+      print(QuiBitsGeneratorinput.statements) #Comment After Execution during Production
       resposnes = quantum_verifier.llm_request(QuiBitsGeneratorinput.statements)
       try:
         code , response = remove_code(resposnes)

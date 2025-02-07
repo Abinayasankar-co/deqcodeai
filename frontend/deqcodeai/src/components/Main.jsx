@@ -55,17 +55,21 @@ const Main = () => {
           body: JSON.stringify(statements),
         });
         if (!response.ok) {
+          setIsLoading(false);
           navigate('/error');
           throw new Error('Network response was not ok');
         }
         const data = await response.json();
         console.log(data) //Ref
+        setIsLoading(false);
         setResult(data);
       },1000)
       if(data.error){
+        setIsLoading(false);
         navigate('/error');
       }
     } catch (error) {
+      setIsLoading(false);
       console.error(error);
       //navigate('/error');
     } finally {
@@ -95,9 +99,9 @@ const Main = () => {
           }}
         >
           <ChatInterface onSubmit={handleSubmit} />
-          {isLoading && <Spinner/>}
+          {isLoading && <Spinner />}
           <div className="flex-1 overflow-auto p-4">
-            {result && <ResultDisplay url={result.url} content={result.content} />}
+            {result && <ResultDisplay url={result.url} content={result.content} code={result.code} />}
           </div>
         </Col>
       </Row>

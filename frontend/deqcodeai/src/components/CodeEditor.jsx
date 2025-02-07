@@ -1,15 +1,19 @@
-import React, { useState } from 'react';
+import React, { useState,useEffect } from 'react';
 import AceEditor from 'react-ace';
 import 'ace-builds/src-noconflict/mode-python';
 import 'ace-builds/src-noconflict/theme-monokai';
 
-const CodeEditor = () => {
-  const [code, setCode] = useState('# Quantum code editor for Qiskit and Cirq');
+const CodeEditor = ({codeList}) => {
+  const [code, setCode] = useState(codeList.join('\n'));
+  const[output,setOutput] = useState('');
+
+  useEffect(() => {
+    setCode(codeList.join('\n'));
+  }, [codeList]);
 
   const handleCodeChange = (newCode) => {
     setCode(newCode);
   };
-
   const handleSubmit = async () => {
     setOutput(''); 
     try {

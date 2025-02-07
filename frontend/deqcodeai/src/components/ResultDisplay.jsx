@@ -1,8 +1,8 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Card, Container, Row, Col } from 'react-bootstrap';
 import CodeEditor from './CodeEditor';
 
-const ResultDisplay = ({ url, content }) => {
+const ResultDisplay = ({ url, content,code}) => {
   return(
   <Container fluid className="px-12 py-3 space-y-4">
   <Row className="mb-4">
@@ -49,7 +49,7 @@ const ResultDisplay = ({ url, content }) => {
       <Card className="bg-gray-800 w-11/12 border-secondary py-4 text-white shadow-md rounded-lg">
         <Card.Header className="text-white">Code Editor</Card.Header>
         <Card.Body>
-         {url && content &&<CodeEditor onExecute={handleExecute} />}  
+         {url && content &&<CodeEditor codeList={code} />}  
         </Card.Body>
       </Card>
     </Col>

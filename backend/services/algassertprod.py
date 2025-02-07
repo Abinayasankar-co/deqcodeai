@@ -1,25 +1,20 @@
 import json
 import math
 import urllib.parse
-from qiskit import QuantumCircuit,Aer,execute
-import json
+from qiskit import QuantumCircuit, Aer, execute
 
 class QuantumCircuitGenerator:
     supported_gates = {
         "H", "X", "Y", "Z", "S", "T", "CX", "CCX", "SWAP", "RX", "RY", "RZ",
-        "Measure", "InputA", "InputB", "InputC"
+        "Measure", "InputA", "InputB", "InputC", "Ryft", "ZDetector", "YDetector", "ZDetectControlReset"
     }
-
     def __init__(self):
         self.circuit = []
-
     def add_qubits(self, count):
         self.qubit_count = count
-
     def validate_gate(self, gate):
         if gate not in self.supported_gates:
             raise ValueError(f"Gate '{gate}' is not supported by Quirk.")
-
     def add_gate(self, gate, targets, controls=None, params=None):
         self.validate_gate(gate)
         all_indices = (targets if targets else []) + (controls if controls else [])
@@ -31,91 +26,82 @@ class QuantumCircuitGenerator:
         if params:
             gate_dict["params"] = params
         self.circuit.append([gate_dict])
-
     def generate_json(self):
         return json.dumps({"cols": self.circuit}, indent=2)
-
     def generate_quirk_url(self):
         quirk_data = {"cols": self.circuit}
-        data = json.dumps(quirk_data)
-        print(data)
         parsed_data = urllib.parse.quote(json.dumps(quirk_data))
         return f"https://algassert.com/quirk#circuit={parsed_data}"
-
     @staticmethod
     def generate_circuit_from_json(input_data):
-     # Extract parameters
-     parameters = input_data.get("Parameters", [{}])[0]
-     n = parameters.get("n", 1)
-
-     # Create circuits
-     qc = QuantumCircuit(n)
-     generator = QuantumCircuitGenerator()
-     generator.add_qubits(n)
-
-     # Add gates to circuit
-     for gate_info in input_data.get("gates", []):
-         gate = gate_info.get("gate")
-         
-         # Convert single qubit to list
-         qubits = gate_info.get("qubits", [])
-         if isinstance(qubits, int):
-             qubits = [qubits]
-         elif not qubits:
-             qubits = [gate_info.get("qubit", 0)]
-
-         # Convert single param to list  
-         params = gate_info.get("params", [])
-         if isinstance(params, (int, float)):
-             params = [params]
-
-         if gate in QuantumCircuitGenerator.supported_gates:
-             try:
-                 if gate == "H":
-                     qc.h(qubits[0])
-                 elif gate == "X":
-                     qc.x(qubits[0])
-                 elif gate == "Y": 
-                     qc.y(qubits[0])
-                 elif gate == "Z":
-                     qc.z(qubits[0])
-                 elif gate == "S":
-                     qc.s(qubits[0])
-                 elif gate == "T":
-                     qc.t(qubits[0])
-                 elif gate == "CX":
-                     qc.cx(qubits[0], qubits[1])
-                 elif gate == "CCX":
-                     qc.ccx(qubits[0], qubits[1], qubits[2])
-                 elif gate == "SWAP":
-                     qc.swap(qubits[0], qubits[1])
-                 elif gate == "RX":
-                     angle = eval(gate["angle"])
-                     qc.rx(angle, qubits[0])
-                 elif gate == "RY":
-                     angle = eval(gate["angle"])
-                     qc.ry(angle, qubits[0])
-                 elif gate == "RZ":
-                     angle = eval(gate["angle"])
-                     qc.rz(angle, qubits[0])
-                 elif gate == "Measure":
-                     qc.measure_all()
-
-                 generator.add_gate(gate, qubits, params=params)
-
-             except IndexError as e:
-                print(f"Warning: Missing parameters for gate {gate}: {e}")
-                continue
-
-     quirk_url = generator.generate_quirk_url()
-     return qc, quirk_url
+        parameters = input_data.get("Parameters", [{}])[0]
+        n = parameters.get("n", 1)
+        qc = QuantumCircuit(n)
+        generator = QuantumCircuitGenerator()
+        generator.add_qubits(n)
+        for gate_info in input_data.get("gates", []):
+            gate = gate_info.get("gate")
+            qubits = gate_info.get("qubits", [])
+            if isinstance(qubits, int):
+                qubits = [qubits]
+            elif not qubits:
+                qubits = [gate_info.get("qubit", 0)]
+            params = gate_info.get("params", [])
+            if isinstance(params, (int, float)):
+                params = [params]
+            if gate in QuantumCircuitGenerator.supported_gates:
+                try:
+                    if gate == "H":
+                        qc.h(qubits[0])
+                    elif gate == "X":
+                        qc.x(qubits[0])
+                    elif gate == "Y":
+                        qc.y(qubits[0])
+                    elif gate == "Z":
+                        qc.z(qubits[0])
+                    elif gate == "S":
+                        qc.s(qubits[0])
+                    elif gate == "T":
+                        qc.t(qubits[0])
+                    elif gate == "CX":
+                        qc.cx(qubits[0], qubits[1])
+                    elif gate == "CCX":
+                        qc.ccx(qubits[0], qubits[1], qubits[2])
+                    elif gate == "SWAP":
+                        qc.swap(qubits[0], qubits[1])
+                    elif gate == "RX":
+                        angle = params[0] if params else 0
+                        qc.rx(angle, qubits[0])
+                    elif gate == "RY":
+                        angle = params[0] if params else 0
+                        qc.ry(angle, qubits[0])
+                    elif gate == "RZ":
+                        angle = params[0] if params else 0
+                        qc.rz(angle, qubits[0])
+                    elif gate == "Ryft":
+                        pass
+                    elif gate == "ZDetector":
+                        pass
+                    elif gate == "YDetector":
+                        pass
+                    elif gate == "ZDetectControlReset":
+                        pass
+                    elif gate == "Measure":
+                        qc.measure_all()
+                    generator.add_gate(gate, qubits, params=params)
+                except IndexError as e:
+                    print(f"Warning: Missing parameters for gate {gate}: {e}")
+                    continue
+        quirk_url = generator.generate_quirk_url()
+        return qc, quirk_url
     
     def run_circuit(self, shots=1024):
-        if self.qc is None:
+        if not hasattr(self, 'qc'):
             raise ValueError("Circuit not generated. Call generate_circuit first.")
         simulator = Aer.get_backend("qasm_simulator")
         result = execute(self.qc, simulator, shots=shots).result()
         return result.get_counts(self.qc)
+
 
 if __name__ == "__main__":
     # Example input

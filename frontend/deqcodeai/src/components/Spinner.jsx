@@ -1,11 +1,11 @@
 import { Spinner as BootstrapSpinner } from 'react-bootstrap';
 
-const Spinner = () => (
+const Spinner = ({onLoading}) => (
   <div 
-    className="position-fixed top-0 start-0 w-100 h-100 bg-dark d-flex align-items-center justify-content-center"
+    className="position-fixed top-0 start-0 w-100 h-100 bg-dark d-flex align-items-center text-white justify-content-center"
     //style={{ zIndex: 1050, backgroundColor: 'rgba(0, 0, 0, 0.9)' }}
   >
-    <div className="bg-dark p-4 rounded text-center">
+    <div className="bg-dark p-4 rounded text-center" >
       <BootstrapSpinner
         animation="border"
         variant="warning"
