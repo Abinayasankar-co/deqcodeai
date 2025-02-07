@@ -138,7 +138,7 @@ function Registration() {
               name="review"
               value={formData.review}
               onChange={handleChange}
-              placeholder="Enter your review"
+              placeholder="Enter your First Thought When did you hear about us"
               className="w-full p-2 mt-1 bg-gray-700 text-white rounded-md focus:outline-none focus:ring-2 focus:ring-cyan-500"
             />
           </div>
