@@ -1,187 +1,117 @@
-import React, { useState } from 'react';
-import { FaEye, FaEyeSlash , FaCalendarAlt} from 'react-icons/fa';
-import "react-datepicker/dist/react-datepicker.css";
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { Container, Form, Button } from 'react-bootstrap';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faEye, faEyeSlash } from '@fortawesome/free-solid-svg-icons';
 
-function Registration() {
-  const [showPassword, setShowPassword] = useState(false);
-  const navigate = useNavigate();
+const Register = () => {
   const [formData, setFormData] = useState({
-    username: '',
+    userId: '',
+    name: '',
+    email: '',
     password: '',
     competency: '',
     purpose: '',
     education: '',
-    foundby: '',
-    review: '',
-    notesbyuser: '',
     preference: '',
+    foundBy: '',
+    review: ''
   });
+  const [showPassword, setShowPassword] = useState(false);
+  const navigate = useNavigate();
 
   const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData({ ...formData, [name]: value });
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
+
+  const handlePasswordVisibility = () => {
+    setShowPassword(!showPassword);
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log('Submitted Data:', formData);
+    console.log(formData);
+
     try {
-      localStorage.setItem('username', formData.username);
       const response = await fetch('/api/register', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(formData),
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(formData)
       });
+      
       if (response.ok) {
-        alert('Registration successful!');
+        const data = await response.json();
+        if (data.token) {
+          localStorage.setItem('token', data.token);
+        }
+        navigate("/home");
       } else {
-        alert('Error registering user');
+        console.error('Signup failed:', response.statusText);
+        navigate("/Failedlogin");
       }
     } catch (error) {
       console.error('Error:', error);
-      alert('An error occurred.');
-      navigate('/error_portal')
+      navigate("/Failedlogin");
     }
   };
 
   return (
-    <div className="bg-gray-900 text-white min-h-screen flex items-center justify-center">
-      <div className="max-w-md w-full bg-gray-800 p-6 rounded-lg shadow-lg">
-        <h1 className="text-2xl font-bold text-gray-100 text-center mb-6">Register</h1>
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div>
-            <label className="block text-sm font-medium text-gray-300">UserName</label>
-            <input
-              type="text"
-              name="username"
-              value={formData.username}
-              onChange={handleChange}
-              placeholder="Enter your user name"
-              className="w-full p-2 mt-1 bg-gray-700 text-white rounded-md focus:outline-none focus:ring-2 focus:ring-cyan-500"
-              required
-            />
+    <Container className="d-flex justify-content-center align-items-center vh-100">
+      <Form onSubmit={handleSubmit} className="p-4 bg-dark text-white rounded w-50">
+        <h2 className="text-center">Register</h2>
+        <div className="d-flex justify-content-between border-bottom pb-3">
+          <div className="w-50 pr-2">
+            <Form.Group>
+              <Form.Label>User ID</Form.Label>
+              <Form.Control type="text" name="userId" value={formData.userId} onChange={handleChange} required />
+            </Form.Group>
+            <Form.Group>
+              <Form.Label>Name</Form.Label>
+              <Form.Control type="text" name="name" value={formData.name} onChange={handleChange} required />
+            </Form.Group>
+            <Form.Group>
+              <Form.Label>Competency</Form.Label>
+              <Form.Control type="text" name="competency" value={formData.competency} onChange={handleChange} required />
+            </Form.Group>
+            <Form.Group>
+              <Form.Label>Purpose</Form.Label>
+              <Form.Control type="text" name="purpose" value={formData.purpose} onChange={handleChange} required />
+            </Form.Group>
           </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-300">Competency</label>
-            <select
-              name="competency"
-              value={formData.competency}
-              onChange={handleChange}
-              className="w-full p-2 mt-1 bg-gray-700 text-white rounded-md focus:outline-none focus:ring-2 focus:ring-cyan-500"
-            >
-              <option value="" disabled>Select your competency</option>
-              <option value="Researcher">Researcher</option>
-              <option value="Scholar">Scholar</option>
-              <option value="Student">Student</option>
-            </select>
+          <div className="w-50 pl-2">
+            <Form.Group>
+              <Form.Label>Email</Form.Label>
+              <Form.Control type="email" name="email" value={formData.email} onChange={handleChange} required />
+            </Form.Group>
+            <Form.Group>
+              <Form.Label>Education</Form.Label>
+              <Form.Control type="text" name="education" value={formData.education} onChange={handleChange} required />
+            </Form.Group>
+            <Form.Group>
+              <Form.Label>Preference</Form.Label>
+              <Form.Control type="text" name="preference" value={formData.preference} onChange={handleChange} required />
+            </Form.Group>
+            <Form.Group>
+              <Form.Label>Found By</Form.Label>
+              <Form.Control type="text" name="foundBy" value={formData.foundBy} onChange={handleChange} required />
+            </Form.Group>
           </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-300">Purpose</label>
-            <select
-              name="purpose"
-              value={formData.purpose}
-              onChange={handleChange}
-              className="w-full p-2 mt-1 bg-gray-700 text-white rounded-md focus:outline-none focus:ring-2 focus:ring-cyan-500"
-            >
-              <option value="" disabled>Select the purpose</option>
-              <option value="Research">Research</option>
-              <option value="Work">Work</option>
-              <option value="Company Preferal">Company Preferal</option>
-            </select>
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-300">Education</label>
-            <select
-              name="education"
-              value={formData.education}
-              onChange={handleChange}
-              className="w-full p-2 mt-1 bg-gray-700 text-white rounded-md focus:outline-none focus:ring-2 focus:ring-cyan-500"
-            >
-              <option value="" disabled>Select your education level</option>
-              <option value="School">School</option>
-              <option value="College">College</option>
-              <option value="Work">Work</option>
-            </select>
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-300">Preference:</label>
-            <input
-              type="text"
-              name="preference"
-              value={formData.preference}
-              onChange={handleChange}
-              placeholder="Enter your preference"
-              className="w-full p-2 mt-1 bg-gray-700 text-white rounded-md focus:outline-none focus:ring-2 focus:ring-cyan-500"
-            />
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-300">Found By:</label>
-            <select
-              name="foundby"
-              value={formData.foundby}
-              onChange={handleChange}
-              className="w-full p-2 mt-1 bg-gray-700 text-white rounded-md focus:outline-none focus:ring-2 focus:ring-cyan-500"
-            >
-              <option value="" disabled>Select how you found us</option>
-              <option value="College">College</option>
-              <option value="Link">Link</option>
-              <option value="Suggested">Suggested</option>
-              <option value="Friends">Friends</option>
-            </select>
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-300">Review:</label>
-            <textarea
-              name="review"
-              value={formData.review}
-              onChange={handleChange}
-              placeholder="Enter your First Thought When did you hear about us"
-              className="w-full p-2 mt-1 bg-gray-700 text-white rounded-md focus:outline-none focus:ring-2 focus:ring-cyan-500"
-            />
-          </div>
-          <div>
-           <label className="block text-sm font-medium text-gray-300">Password:</label>
-             <div className="relative">
-               <input
-                    type={showPassword ? "text" : "password"}
-                    name="password"
-                    value={formData.password}
-                    onChange={handleChange}
-                    placeholder="Enter your password"
-                    className="w-full p-2 mt-1 bg-gray-700 text-white rounded-md focus:outline-none focus:ring-2 focus:ring-cyan-500"
-                    required
-                />
-                <span
-                   onClick={() => setShowPassword(!showPassword)}
-                   className="absolute inset-y-0 right-3 flex items-center text-gray-400 cursor-pointer"
-                >
-                {showPassword ? <FaEyeSlash /> : <FaEye />}
-                </span>
-             </div>
-           </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-300">Notes By User:</label>
-            <textarea
-              name="notesbyuser"
-              value={formData.notesbyuser}
-              onChange={handleChange}
-              placeholder="Enter your notes"
-              className="w-full p-2 mt-1 bg-gray-700 text-white rounded-md focus:outline-none focus:ring-2 focus:ring-cyan-500"
-            />
-          </div>
-          <button
-            type="submit"
-            className="w-full py-2 mt-4 bg-cyan-500 text-orange font-bold rounded-md hover:bg-cyan-600 transition"
-          >
-            Register
-          </button>
-        </form>
-      </div>
-    </div>
+        </div>
+        <Form.Group className="mt-3">
+          <Form.Label>Review</Form.Label>
+          <Form.Control as="textarea" name="review" value={formData.review} onChange={handleChange} required />
+        </Form.Group>
+        <Form.Group className="mt-3 position-relative">
+          <Form.Label>Password</Form.Label>
+          <Form.Control type={showPassword ? 'text' : 'password'} name="password" value={formData.password} onChange={handleChange} required />
+          <faEye className="position-absolute" onClick={handlePasswordVisibility} />
+        </Form.Group>
+        <Button variant="light" type="submit" className="mt-3 w-100">Submit</Button>
+        <div className='text-center py-2'>Already Have an Account?</div>
+        <Button variant="light" href='/login' type='button' className="mt-1 w-100">Login</Button>
+      </Form>
+    </Container>
   );
-}
+};
 
-export default Registration;
+export default Register;

@@ -13,6 +13,7 @@
     "@tailwindcss/typography": "^0.5.15",
     "ace-builds": "^1.37.1",
     "autoprefixer": "^10.4.20",
+    "font-awesome": "^4.7.0",
     "lucide-react": "^0.469.0",
     "postcss": "^8.4.49",
     "react": "^18.3.1",

@@ -1,5 +1,5 @@
 import MainPage from './components/Main'
-import {Route,Routes} from 'react-router-dom'
+import {Route,Routes, useNavigate} from 'react-router-dom'
 import './index.css'
 import Registration from './components/Registeration'
 import RegistrationError from './components/RegisterationError'
@@ -7,12 +7,12 @@ import OtherError from './components/OtherError'
 import NotFound404 from './components/NotFoundError'
 import Login from './components/login'
 import { AuthProvider, useAuth } from './AuthContext';
-import { Navigate } from 'react-router-dom';
 
 const ProtectedRoute = ({ children }) => {
+  navigate = useNavigate();
   const { isAuthenticated } = useAuth();
   if (!isAuthenticated) {
-    return <Navigate to="/design"/>;
+    return navigate("/login");
   }
   return children;
 };
