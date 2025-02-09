@@ -1,5 +1,5 @@
 from pydantic import BaseModel
-from fastapi import Form
+from fastapi import Form,UploadFile
 from typing import List
 from typing import Optional
 from datetime import datetime
@@ -44,3 +44,8 @@ class DeqcodeUserLogin(BaseModel):
 
 class CircuitViewer(BaseModel):
     username :str = Form(...)
+
+class UserQuery(BaseModel):
+    username :str = Form(...)
+    querymsg :str = Form(...)
+    imgdata : Optional[UploadFile] = None

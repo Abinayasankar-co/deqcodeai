@@ -12,6 +12,7 @@ load_dotenv()
 
 api_key = os.environ["GROQ_API_KEY"]
 
+#Sample code Not Included in Production
 class QuirkCircuitGenerator:
     def __init__(self):
         self.supported_gates = {

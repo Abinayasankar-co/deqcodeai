@@ -9,27 +9,35 @@ class QuantumSimulator:
 
     @simulate.register
     def _(self, code: str, framework: str = "qiskit") -> str:
-        exec_globals = {"QuantumCircuit": QuantumCircuit, "Aer": Aer, "execute": execute}
-        exec(code, exec_globals)
+        try:
+          exec_globals = {"QuantumCircuit": QuantumCircuit, "Aer": Aer, "execute": execute}
+          exec(code, exec_globals)
 
-        if "qc" not in exec_globals:
-            raise ValueError("Qiskit code must define a QuantumCircuit named 'qc'")
+          if "qc" not in exec_globals:
+             raise ValueError("Qiskit code must define a QuantumCircuit named 'qc'")
         
-        qc = exec_globals["qc"]
-        simulator = Aer.get_backend("qasm_simulator")
-        job = execute(qc, simulator)
-        result = job.result().get_counts()
-        return f"Qiskit simulation result: {result}"
+          qc = exec_globals["qc"]
+          simulator = Aer.get_backend("qasm_simulator")
+          job = execute(qc, simulator)
+          result = job.result().get_counts()
+          return f"Qiskit simulation result: {result}"
+        
+        except Exception as e:
+           return f"Qiskit Simulation Error: {e}"
 
     @simulate.register
     def _(self, code: str, framework: str = "cirq") -> str:
-        exec_globals = {"cirq": cirq}
-        exec(code, exec_globals)
+        try: 
+          exec_globals = {"cirq": cirq}
+          exec(code, exec_globals)
 
-        if "circuit" not in exec_globals:
+          if "circuit" not in exec_globals:
             raise ValueError("Cirq code must define a Circuit named 'circuit'")
         
-        circuit = exec_globals["circuit"]
-        simulator = cirq.Simulator()
-        result = simulator.run(circuit)
-        return f"Cirq simulation result: {result}"
+          circuit = exec_globals["circuit"]
+          simulator = cirq.Simulator()
+          result = simulator.run(circuit)
+          return f"Cirq simulation result: {result}"
+        
+        except Exception as e:
+           return f"Cirq FrameWork Error: {e}"

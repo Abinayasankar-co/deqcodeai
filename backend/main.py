@@ -1,20 +1,28 @@
+import os
 import jwt
 import secrets
-from fastapi import FastAPI , Depends
+import smtplib
+from fastapi import FastAPI , Depends , Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.security import OAuth2PasswordBearer
 from fastapi.exceptions import HTTPException
+from fastapi.templating import Jinja2Templates
 from db.db_handler import dbhandles
-from db.datahandler import QuibitsGeneratorinput,DeqcodeUser,DeqcodeUserLogin,CodeRequest
+from db.datahandler import QuibitsGeneratorinput,DeqcodeUser,DeqcodeUserLogin,CodeRequest , UserQuery
 from db.datahandler import PreviousCircuits,CircuitViewer,PricingPlan,DeqcodeLoginCredentials
 from services.quirk_circuit_generator import QuantumLLM
 from services.simulation import QuantumSimulator
 from services.algassertprod import QuantumCircuitGenerator
 from services.util import create_session_token , remove_code
+from email.mime.multipart import MIMEMultipart
+from email.mime.text import MIMEText
+from dotenv import load_dotenv
 
 app = FastAPI()
 secret = secrets.token_hex(32)
 SECRET_KEY = secret
+
+load_dotenv()
 
 app.add_middleware(
     CORSMiddleware,
@@ -25,6 +33,7 @@ app.add_middleware(
 )
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="session_token")
+templates = Jinja2Templates(directory="templates")
 
 
 @app.get("/health")
@@ -132,6 +141,33 @@ async def simulate_code(request: CodeRequest):
         raise HTTPException(status_code=400, detail=str(e))
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
+    
+@app.post("/query")
+async def query(querymsg : UserQuery):
+    try:
+        query_response = None
+        subject = "The Query Have been Considered"
+        html_content = templates.get_template("QueryResponse.html").render(
+            subject = subject,
+            user_name = query_response.name,
+            message_body = query_response.body,
+        )
+        sender_email = os.environ["EMAIL_ID"]
+        receiver_email = query_response.email
+        password = os.environ["EMAIL_PASSWORD"]
+        msg = MIMEMultipart("alternative")
+        msg["Subject"] = subject
+        msg["From"] = sender_email
+        msg["To"] = receiver_email
+        msg.attach(MIMEText(html_content, "html"))
+        with smtplib.SMTP("smtp.gmail.com", 587) as server:
+          server.starttls()
+          server.login(sender_email, password)
+          server.sendmail(sender_email, receiver_email, msg.as_string())
+          return {"message": "Email sent"}
+
+    except Exception as e:
+        raise HTTPException(status_code=500,detail=f"The Mail have not been sent but the issue is Still in Progress to Resolve")
 
 #Testing not a valid circuit api for production - caution : Don't use in documentation
 @app.post("/generate_circuit")

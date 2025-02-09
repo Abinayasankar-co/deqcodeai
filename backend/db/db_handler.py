@@ -122,6 +122,4 @@ session_token = create_session_token(Deqcodelogger.username)
                                 {'user_name': user["user_name"]},
                                 { "$push": { "tokens": [session_token , datetime.now()] } } 
                             ) 
-
-
 """
