@@ -53,9 +53,13 @@ def pricing_plan():
 @app.post('/register')
 async def deqcode_user_registeration(DeqcodeUser : DeqcodeUser):
         try:          
-          db_user = dbhandles()
-          user_message = await db_user.create_user(DeqcodeUser)
-          return user_message
+            db_user = dbhandles()
+            user_message = await db_user.create_user(DeqcodeUser)
+            token = create_session_token(DeqcodeUser.username,SECRET_KEY)
+            return {
+              "UserMessage" : user_message,
+              "session_key" : token
+            }
         except Exception as e:
           raise HTTPException(status_code=500,detail=f"{e}") 
 

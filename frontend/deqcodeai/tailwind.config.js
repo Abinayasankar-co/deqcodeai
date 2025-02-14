@@ -24,6 +24,7 @@ export default {
         emerald: colors.emerald,
         indigo: colors.indigo,
         yellow: colors.yellow,
+        purple:colors.purple
         },
       extend: {
         fontFamily: {

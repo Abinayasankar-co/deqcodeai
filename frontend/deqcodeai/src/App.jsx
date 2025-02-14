@@ -9,7 +9,7 @@ import Login from './components/login'
 import { AuthProvider, useAuth } from './AuthContext';
 
 const ProtectedRoute = ({ children }) => {
-  navigate = useNavigate();
+  const navigate = useNavigate();
   const { isAuthenticated } = useAuth();
   if (!isAuthenticated) {
     return navigate("/login");
