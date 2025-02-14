@@ -2,9 +2,12 @@ import React, { useState,useEffect } from 'react';
 import AceEditor from 'react-ace';
 import 'ace-builds/src-noconflict/mode-python';
 import 'ace-builds/src-noconflict/theme-monokai';
+import FrameworkSelector from './ModelSelection';
 
 const CodeEditor = ({codeList}) => {
   const [code, setCode] = useState(codeList.join('\n'));
+  const [model,setModel] = useState('');
+  const [modelCardDisplay,setModelCardDisplay] = useState(false); 
   const[output,setOutput] = useState('');
 
   useEffect(() => {
@@ -14,13 +17,25 @@ const CodeEditor = ({codeList}) => {
   const handleCodeChange = (newCode) => {
     setCode(newCode);
   };
+
+  const processCodeToList = (codeString) => {
+    return codeString
+      .split('\n')
+      .map(line => line.trim())
+      .filter(line => line.length > 0);
+  };
+
   const handleSubmit = async () => {
     setOutput(''); 
+    const codeList = processCodeToList(code);
     try {
       const response = await fetch('/api/simulate', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ code }),
+        body: JSON.stringify({ 
+          code : codeList,
+
+         }),
       });
 
       if (!response.ok) {
@@ -61,6 +76,8 @@ const CodeEditor = ({codeList}) => {
           className="border-2 border-gray-700 rounded-md"
         />
       </div>
+      <FrameworkSelector  />
+    
       <button
         onClick={handleSubmit}
         className="mt-4 bg-blue-600 text-white py-3 px-5 rounded-lg hover:bg-blue-700 transition"

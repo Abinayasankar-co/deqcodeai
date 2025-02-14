@@ -13,11 +13,11 @@ export const AuthProvider = ({ children }) => {
             setIsAuthenticated(true);
             setUsername(localStorage.getItem('username'));
         }
-        setLoading(false); // Set loading to false once we've checked for the token
+        setLoading(false); 
     }, []);
 
     if (loading) {
-        return <div>Loading.....</div>; // Optional: Add a loading state
+        return <div>Loading.....</div>; 
     }
 
     return (

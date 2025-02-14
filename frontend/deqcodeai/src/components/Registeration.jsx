@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect} from 'react';
 import { ChevronRight, Eye, EyeOff, User, Mail, Book, Target, GraduationCap, Heart, Search, FileText, Lock } from 'lucide-react';
 import { useAuth } from '../AuthContext';
 import { useNavigate } from 'react-router-dom';
@@ -7,20 +7,26 @@ import React from 'react';
 const Register = () => {
   const {setIsAuthenticated, setUsername} = useAuth();
   const [formData, setFormData] = useState({
-    userId: '',
-    name: '',
+    username: '',
     email: '',
     password: '',
     competency: '',
     purpose: '',
     education: '',
+    foundby: '',
+    review: '',
     preference: '',
-    foundBy: '',
-    review: ''
   });
   const [showPassword, setShowPassword] = useState(false);
   const [currentStep, setCurrentStep] = useState(1);
   const navigate = useNavigate();
+
+  useEffect(()=>{
+          localStorage.removeItem('session_token');
+          localStorage.removeItem('username');
+          setIsAuthenticated(false);
+          setUsername('');
+      },[setIsAuthenticated, setUsername])
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -68,7 +74,7 @@ const Register = () => {
     <div className="min-h-screen bg-gray-900 flex items-center justify-center p-4">
       <div className="max-w-4xl w-full bg-gray-800 rounded-2xl shadow-xl overflow-hidden">
         <div className="p-8">
-          <div className='text-3xl text-center text-white mb-2 font-sans font-bold'>Deqcode Welocomes You!</div>
+          <div className='text-3xl text-center text-white mb-2 font-sans font-bold'>Deqcode Welcomes You!</div>
           <h2 className="text-3xl font-bold text-white mb-2 font-sans">Create Account</h2>
           <div className="h-1 w-20 bg-purple-500 mb-6"></div>
           
@@ -96,8 +102,8 @@ const Register = () => {
                   <User className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={20} />
                   <input
                     type="text"
-                    name="userId"
-                    placeholder="User ID"
+                    name="username"
+                    placeholder="User Name"
                     className="w-full bg-gray-700 text-white pl-12 pr-4 py-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 transition-all"
                     value={formData.userId}
                     onChange={handleChange}
@@ -197,7 +203,7 @@ const Register = () => {
                   <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={20} />
                   <input
                     type="text"
-                    name="foundBy"
+                    name="foundby"
                     placeholder="How did you find us?"
                     className="w-full bg-gray-700 text-white pl-12 pr-4 py-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 transition-all"
                     value={formData.foundBy}

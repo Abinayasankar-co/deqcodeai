@@ -26,6 +26,7 @@ class QuibitsGeneratorinput(BaseModel):
 
 class DeqcodeUser(BaseModel):
    username : str = Form(...)
+   email:str = Form(...)
    password : str = Form(...)
    competency : str = Form(...)
    purpose : str = Form(...)
@@ -34,7 +35,7 @@ class DeqcodeUser(BaseModel):
    review : str = Form(...)
    notesbyuser : str = Form(...)
    preference : str = Form(...)
-   created_dt: datetime = datetime.now()
+   created_dt: Optional[datetime] = datetime.now()
    modified_by: Optional[str] = None
    modified_dt: Optional[datetime] = None
 

@@ -24,6 +24,7 @@ class dbhandles:
              circuit_count = 0 
              user_document = {
                "user_name": deqcodeuser.username,
+               "email":deqcodeuser.email,
                "password" : hash_password(deqcodeuser.password),
                "competency" : deqcodeuser.competency,
                "purpose" : deqcodeuser.purpose,
