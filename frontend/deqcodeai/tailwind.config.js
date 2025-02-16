@@ -93,11 +93,11 @@ export default {
 				transparent: 'transparent',
 				current: 'currentColor',
 			
-				// 🌑 Background & Foreground
+				// Background & Foreground
 				background: 'hsl(var(--background))',
 				foreground: 'hsl(var(--foreground))',
 			
-				// 🎨 Primary & Secondary Colors
+				// Primary & Secondary Colors
 				primary: {
 					DEFAULT: 'hsl(var(--primary))',  // Main branding color
 					foreground: 'hsl(var(--primary-foreground))',
@@ -111,7 +111,7 @@ export default {
 					dark: '#0F766E', // Teal-800 (Deep)
 				},
 			
-				// 🌿 Accent Colors (Used for highlights, call-to-action, etc.)
+				// Accent Colors (Used for highlights, call-to-action, etc.)
 				accent: {
 					DEFAULT: 'hsl(var(--accent))',
 					foreground: 'hsl(var(--accent-foreground))',
@@ -119,7 +119,7 @@ export default {
 					dark: '#B45309', // Amber-800 (Deep & Strong)
 				},
 			
-				// ⚠️ Warning & Destructive (Errors & Alerts)
+				// Warning & Destructive (Errors & Alerts)
 				warning: {
 					DEFAULT: '#F59E0B', // Amber-400
 					foreground: '#92400E', // Darker amber for contrast
@@ -131,13 +131,13 @@ export default {
 					dark: '#991B1B', // Red-900 (Deep Error)
 				},
 			
-				// ✅ Success & Confirmation
+				// Success & Confirmation
 				success: {
 					DEFAULT: '#22C55E', // Green-500 (Positive feedback)
 					foreground: '#065F46', // Darker green for contrast
 				},
 			
-				// 🛑 Muted / Disabled
+				// Muted / Disabled
 				muted: {
 					DEFAULT: 'hsl(var(--muted))',
 					foreground: 'hsl(var(--muted-foreground))',
@@ -145,12 +145,12 @@ export default {
 					dark: '#6B7280', // Neutral-500 (Deeper Grays)
 				},
 			
-				// 📏 Borders & Input Styles
+				// Borders & Input Styles
 				border: 'hsl(var(--border))',
 				input: 'hsl(var(--input))',
 				ring: 'hsl(var(--ring))',
 			
-				// 📊 Chart Colors (For Data Visualizations)
+				// Chart Colors (For Data Visualizations)
 				chart: {
 					'1': '#6366F1', // Indigo-500
 					'2': '#10B981', // Emerald-500
@@ -159,7 +159,7 @@ export default {
 					'5': '#3B82F6', // Blue-500
 				},
 			
-				// 🌗 Dark Mode Colors
+				// Dark Mode Colors
 				dark: {
 					background: '#111827', // Dark Blue Gray
 					foreground: '#F9FAFB', // Near White
@@ -169,7 +169,7 @@ export default {
 					destructive: '#B91C1C', // Deep Red
 				},
 			
-				// 🎨 Standard Colors (Material Design Palette)
+				// Standard Colors (Material Design Palette)
 				gray: colors.gray,
 				slate: colors.slate,
 				zinc: colors.zinc,

@@ -27,8 +27,10 @@ const CodeEditor = ({codeList}) => {
 
   const handleSubmit = async () => {
     setOutput(''); 
+    setModelCardDisplay(true);
     const codeList = processCodeToList(code);
     try {
+      setModelCardDisplay(false);
       const response = await fetch('/api/simulate', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -76,7 +78,7 @@ const CodeEditor = ({codeList}) => {
           className="border-2 border-gray-700 rounded-md"
         />
       </div>
-      <FrameworkSelector  />
+      {modelCardDisplay && <FrameworkSelector/>}
     
       <button
         onClick={handleSubmit}
