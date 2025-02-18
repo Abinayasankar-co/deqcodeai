@@ -2,7 +2,7 @@ import os
 import jwt
 import secrets
 import smtplib
-from fastapi import FastAPI , Depends , Request
+from fastapi import FastAPI , Depends 
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.security import OAuth2PasswordBearer
 from fastapi.exceptions import HTTPException
@@ -35,7 +35,6 @@ app.add_middleware(
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="session_token")
 templates = Jinja2Templates(directory="templates")
 
-
 @app.get("/health")
 def app_health():
     return {"health":"DeqcodeAI"}
@@ -54,15 +53,18 @@ def pricing_plan():
 async def deqcode_user_registeration(DeqcodeUser : DeqcodeUser):
         try:          
             db_user = dbhandles()
-            user_message = await db_user.create_user(DeqcodeUser)
-            token = create_session_token(DeqcodeUser.username,SECRET_KEY)
-            return {
-              "UserMessage" : user_message,
-              "session_key" : token
-            }
+            if db_user.is_username_present(DeqcodeUser.username):
+              user_message = await db_user.create_user(DeqcodeUser)
+              token = create_session_token(DeqcodeUser.username,SECRET_KEY)
+              return {
+               "UserMessage" : user_message,
+               "session_key" : token
+              }
+            else:
+                raise HTTPException(status_code=404,detail="User Already Found")
         except Exception as e:
-          raise HTTPException(status_code=500,detail=f"{e}") 
-
+            raise HTTPException(status_code=500,detail=f"{e}")
+        
 @app.post('/login')
 async def deqcode_user_login(DeqcodeUserLogin : DeqcodeUserLogin):
         try:

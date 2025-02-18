@@ -1,0 +1,6 @@
+qiskit-aer
+fastapi
+python-dotenv
+qiskit
+qiskit-terra
+bloom-filter2

@@ -1,73 +1,67 @@
-# Import necessary libraries
 import cirq
 from mitiq import zne, cdr, pec
 from mitiq.interface.mitiq_cirq import compute_density_matrix
+from mitiq.pec.representations.depolarizing import represent_operation_with_local_depolarizing_noise
+import numpy as np
 
 def create_quantum_circuit():
-    """Create a quantum circuit with a mix of Clifford and non-Clifford gates."""
     q0, q1 = cirq.LineQubit.range(2)
     circuit = cirq.Circuit(
-        cirq.H(q0),  
-        cirq.T(q0),  
-        cirq.CNOT(q0, q1),  
-        cirq.measure(q0, q1) 
+        cirq.H(q0),
+        cirq.T(q0),
+        cirq.CNOT(q0, q1)
     )
     return circuit
 
+def is_clifford_gate(gate):
+    return isinstance(gate, (cirq.HPowGate, cirq.CXPowGate, cirq.ZPowGate)) and gate.exponent in {1, -1}
+
+def is_non_clifford_gate(gate):
+    return isinstance(gate, cirq.HPowGate) and gate.exponent in {1, -1}
+
 def select_error_mitigation_technique(circuit):
-    """Analyze the circuit and choose the best error mitigation technique."""
     clifford_gates = 0
     non_clifford_gates = 0
+
     for moment in circuit:
         for op in moment:
-            if isinstance(op.gate, (cirq.H, cirq.CNOT, cirq.S, cirq.Z)): 
+            gate = op.gate
+            if is_clifford_gate(gate):
                 clifford_gates += 1
-            elif isinstance(op.gate, (cirq.T, cirq.T**-1)): 
+            elif is_non_clifford_gate(gate):
                 non_clifford_gates += 1
 
     if non_clifford_gates == 0:
-        print("Circuit contains only Clifford gates. Using Clifford Data Regression (CDR).")
         return cdr.execute_with_cdr
-    elif non_clifford_gates <= 2:  
-        print("Circuit has a small number of non-Clifford gates. Using Probabilistic Error Cancellation (PEC).")
+    elif non_clifford_gates <= 2:
         return pec.execute_with_pec
     else:
-        print("Circuit has a large number of non-Clifford gates. Using Zero-Noise Extrapolation (ZNE).")
         return zne.execute_with_zne
 
 def execute_circuit(circuit):
-    """Simulate the circuit and return the expectation value of an observable."""
-    # Define an observable (e.g., Pauli Z on qubit 1)
-    observable = cirq.Z(cirq.LineQubit(1))
-    # Simulate the circuit with noise
-    density_matrix = compute_density_matrix(circuit, noise_level=0.1)
-    # Compute the expectation value
-    expectation_value = observable.expectation_from_density_matrix(density_matrix, qubit_map={cirq.LineQubit(1): 0})
+    simulator = cirq.DensityMatrixSimulator()
+    result = simulator.simulate(circuit)
+    density_matrix = result.final_density_matrix
+    observable = np.array([[1, 0], [0, -1]])
+    expectation_value = np.trace(density_matrix @ np.kron(np.eye(2), observable)).real
     return expectation_value
 
-# Main function to dynamically apply error mitigation
 def dynamic_error_mitigation(circuit):
-    """Dynamically select and apply the best error mitigation technique."""
-    # Select the best error mitigation technique
     mitigation_function = select_error_mitigation_technique(circuit)
-    
-    # Apply the selected technique
+
     if mitigation_function == cdr.execute_with_cdr:
         mitigated_value = cdr.execute_with_cdr(circuit, execute_circuit)
     elif mitigation_function == pec.execute_with_pec:
-        mitigated_value = pec.execute_with_pec(circuit, execute_circuit)
+        reps = {op: represent_operation_with_local_depolarizing_noise(op, 0.001) for op in circuit.all_operations() if not isinstance(op.gate, cirq.MeasurementGate)}
+        mitigated_value = pec.execute_with_pec(circuit, execute_circuit, representations=reps)
     else:
-        mitigated_value = zne.execute_with_zne(circuit, execute_circuit, scale_noise=zne.scaling.fold_global)
-    
+        mitigated_value = zne.execute_with_zne(circuit, execute_circuit, scale_noise=zne.scaling.fold_gates_at_random)
+
     return mitigated_value
 
-# Stage 1: Create the quantum circuit
 circuit = create_quantum_circuit()
-
-# Stage 2: Apply dynamic error mitigation
 mitigated_value = dynamic_error_mitigation(circuit)
-
-# Stage 3: Compare raw and mitigated results
 raw_value = execute_circuit(circuit)
+
 print("Raw Expectation Value (without error mitigation):", raw_value)
 print("Mitigated Expectation Value (with dynamic error mitigation):", mitigated_value)

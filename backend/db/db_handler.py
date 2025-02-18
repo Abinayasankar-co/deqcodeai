@@ -1,14 +1,13 @@
 from pymongo import MongoClient
 from fastapi import HTTPException
-from datetime import datetime
 from dotenv import load_dotenv
-from services.util import hash_password , create_session_token
+from services.util import hash_password 
+from bloom_filter2 import BloomFilter
 import bcrypt
 import os
 import urllib.parse
 
 load_dotenv()
-
 
 class dbhandles:
         def __init__(self,username=os.environ["MONGO_USERNAME"],password=os.environ["MONGO_PASSWORD"]) -> None:
@@ -16,11 +15,17 @@ class dbhandles:
           self.encoded_password = urllib.parse.quote_plus(password)
           self.Client = MongoClient(f"mongodb+srv://{self.encoded_username}:{self.encoded_password}@alsadocs.2uqmgxl.mongodb.net/?retryWrites=true&w=majority&appName=ALSADOCS")
           self.database = self.Client["DEQODE_DB"]
+          self.bloom = BloomFilter(max_elements=1000, error_rate=0.001)
+        
+        def is_username_present(self,username:str) -> bool:
+            if username in self.bloom:
+                return True
+            return False
 
-        async def create_user(self,deqcodeuser): # To create the user in the database
+        async def create_user(self,deqcodeuser):
             try:
              collections = self.database["DEQODE_USER_LIST"]
-             pack = "" #need to make the user a special request form the frontend for this area
+             pack = "" 
              circuit_count = 0 
              user_document = {
                "user_name": deqcodeuser.username,
@@ -37,7 +42,8 @@ class dbhandles:
                "created_dt": deqcodeuser.created_dt,
                "modified_by":deqcodeuser.modified_by,
                "modified_dt":deqcodeuser.modified_dt
-             } 
+             }
+             self.bloom.add(deqcodeuser.username)
              insert_deqcode_user = collections.insert_one(user_document)
              if insert_deqcode_user.acknowledged:
                 return {"Message":"Success!, Your a part of Deqcode"}
@@ -61,7 +67,8 @@ class dbhandles:
         async def get_store_circuit(self,username : str,circuit : dict):
             try:
                 collections = self.database["DEQODE_CIRCUIT_CAPTURE"] 
-                user = collections.find_one({"user_name": username}) 
+                user = collections.find_one({"user_name": username})
+                print(user) 
                 if user: # Directly push the circuit to the user's circuits list, allowing duplicates 
                     collections.update_one( {'user_name': username}, {"$push": {"circuits": circuit}}, upsert=True ) 
                 else: 

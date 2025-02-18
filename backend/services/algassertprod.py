@@ -1,7 +1,7 @@
 import json
 import math
 import urllib.parse
-from qiskit import QuantumCircuit, Aer, execute
+from qiskit import QuantumCircuit
 
 class QuantumCircuitGenerator:
     supported_gates = {
@@ -94,13 +94,6 @@ class QuantumCircuitGenerator:
                     continue
         quirk_url = generator.generate_quirk_url()
         return qc, quirk_url
-    
-    def run_circuit(self, shots=1024):
-        if not hasattr(self, 'qc'):
-            raise ValueError("Circuit not generated. Call generate_circuit first.")
-        simulator = Aer.get_backend("qasm_simulator")
-        result = execute(self.qc, simulator, shots=shots).result()
-        return result.get_counts(self.qc)
 
 
 if __name__ == "__main__":
