@@ -1,41 +1,18 @@
 import React, { useState, useEffect } from 'react';
 import { Container, Row, Col } from 'react-bootstrap';
 import Navbar from './Navbar';
-import Sidebar from './Sidebar';
 import Spinner from './Spinner';
+import Sidebar from "./Sidebar";
 import ResultDisplay from './ResultDisplay';
 import ChatInterface from './ChatInterface';
 import { useNavigate } from 'react-router-dom';
 
 const Main = () => {
-  const [currentCircuit, setCurrentCircuit] = useState(null);
-  const [sidebarOpen, setSidebarOpen] = useState(true);
+  const [sidebar, setSidebar] = useState(false);
   const [messages, setMessages] = useState([]);
   const [result, setResult] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
-  const navigate  = useNavigate();
-  
-  const view_template = {
-    "username": localStorage.getItem('username')
-  }
-  useEffect(() => {
-      try{
-        fetch('/api/viewcircuits',{
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify(view_template)
-          })
-          .then((response) => response.json())
-          .then((data) => localStorage.setItem('circuits', JSON.stringify(data)))
-          .catch((error) => console.error('Error fetching data:', error));
-
-      }catch{
-          console.error('Error fetching data');
-      }
-    },
-  [])
+  const navigate = useNavigate();
 
   const handleSubmit = async (message) => {
     setMessages([...messages, message]);
@@ -63,8 +40,8 @@ const Main = () => {
         console.log(data) //Ref
         setIsLoading(false);
         setResult(data);
-      },1000)
-      if(data.error){
+      }, 1000)
+      if (data.error) {
         setIsLoading(false);
         navigate('/error');
       }
@@ -77,35 +54,27 @@ const Main = () => {
     }
   };
 
-
   return (
     <>
-    <Container fluid className="vh-100 p-0 bg-black">
-      <Navbar username={localStorage.getItem('username')} />
-      <Row className="h-100 g-0">
-        <Sidebar
-          isOpen={sidebarOpen}
-          toggle={() => setSidebarOpen(!sidebarOpen)}
-          //chats = {localStorage.getItem('circuits')}
-          chats = {localStorage.getItem('circuits')}
-          setCurrentCircuit={setCurrentCircuit}
-          //chats={[{ title: 'Previous Chat 1' }, { title: 'Previous Chat 2' }]}
-        />
-        <Col
-          className="h-100 d-flex flex-column"
-          style={{
-            marginLeft: sidebarOpen ? '250px' : '0',
-            transition: 'margin-left 0.3s ease-in-out',
-          }}
-        >
-          <ChatInterface onSubmit={handleSubmit} />
-          {isLoading && <Spinner />}
-          <div className="flex-1 overflow-auto p-4">
-            {result && <ResultDisplay url={result.url} content={result.content} code={result.code} />}
-          </div>
-        </Col>
-      </Row>
-    </Container>
+      <Container fluid className="vh-100 p-0 bg-black">
+        <Navbar username={localStorage.getItem('username')} />
+        <Row className="h-100 g-0">
+          <Sidebar isOpen={sidebar} toggle={() => setSidebar(!sidebar)} />
+          <Col
+            className="h-100 d-flex flex-column"
+            style={{
+              marginLeft: sidebar ? '15rem' : '0',
+              transition: 'margin-left 0.3s ease-in-out',
+            }}
+          >
+            <ChatInterface onSubmit={handleSubmit} />
+            {isLoading && <Spinner />}
+            <div className="flex-1 overflow-auto p-4">
+              {result && <ResultDisplay url={result.url} content={result.content} code={result.code} />}
+            </div>
+          </Col>
+        </Row>
+      </Container>
     </>
   );
 };

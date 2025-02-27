@@ -19,4 +19,7 @@ class QuantumPrompt:
                     Avoid Parser Errors and ensure that returned json output is correct. 
                     Note : 1. You should only provide the json in the Output no other explanations needed.
                            2.Provide consistency in generating the json output Object format.
-                           3. Provide the code which is relevant to the json generated."""
+                           3.Provide the code which is relevant to the json generated.
+                           4.Pls check if there will any any error or exception arised
+                           5.Check whether the Dependencies provided and imported are correct and maintain same package version
+                           6.Note: Most Important think is the user should not encounter any error during the execution. """

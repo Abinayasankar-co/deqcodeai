@@ -72,7 +72,7 @@ class dbhandles:
                 if user: # Directly push the circuit to the user's circuits list, allowing duplicates 
                     collections.update_one( {'user_name': username}, {"$push": {"circuits": circuit}}, upsert=True ) 
                 else: 
-                    collections.insert_one({"username":username,"circuits":circuit})
+                    collections.insert_one({"user_name":username,"circuits":[circuit]})
                 return {"Message": "Circuit has been stored"}
             except Exception as e:
                 raise HTTPException(status_code=500,detail=f"{e}")

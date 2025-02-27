@@ -1,5 +1,6 @@
 import os
 import jwt
+import json
 import secrets
 import smtplib
 from fastapi import FastAPI , Depends 
@@ -130,6 +131,7 @@ async def design_circuit(QuiBitsGeneratorinput: QuibitsGeneratorinput):
       except Exception as e:
           raise HTTPException(status_code=500, detail=f"Error Qiskit:{e}")
       result = {"Response":resposnes,"url":quirk_url,"code":code,"content":resposnes.get("explanation")}
+      print(QuiBitsGeneratorinput.username)
       storage_circuit = await db.get_store_circuit(QuiBitsGeneratorinput.username,result)
       if storage_circuit: return result
     except Exception as e:
@@ -141,8 +143,18 @@ async def simulate_code(request: CodeRequest):
     if not request.code or not request.simulator:
         raise HTTPException(status_code=400, detail="Code and simulator type are required")
     try:
-        result = simulator.simulate(request.code, request.simulator)
-        return {"result": result}
+        if request.simulator == "qiskit":
+            result = simulator.qiskit_code_simulate(request.code)
+            print(result) #comment if not neccesary
+            result_map = simulator.generate_qiskit_histogram(json.loads(result))
+            #print(result_map) #comment if not neccesary
+            return {"result": result,"resultmap":result_map}
+        elif request.simulator == "cirq":
+            result = simulator.cirq_code_simulate(request.code)
+            result_map = simulator.generate_cirq_histogram(json.loads(result))
+            return {"result":result,"resultmap":result_map}
+        else:
+            raise ValueError("The Framwork is not defined")
     except ValueError as e:
         raise HTTPException(status_code=400, detail=str(e))
     except Exception as e:

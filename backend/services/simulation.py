@@ -1,5 +1,9 @@
 from qiskit import QuantumCircuit, transpile
 from qiskit_aer import AerSimulator
+from qiskit.visualization import plot_histogram
+import matplotlib.pyplot as plt
+import io
+import base64
 import cirq
 
 class QuantumSimulator:
@@ -32,6 +36,28 @@ class QuantumSimulator:
             return f"Cirq simulation result: {result}"
         except Exception as e:
             return f"Cirq Simulation Error: {e}"
+    
+    def generate_qiskit_histogram(self,qiskit_result:dict):
+        try:
+          fig = plot_histogram(qiskit_result)
+          buffer = io.BytesIO()
+          fig.savefig(buffer,format='png')
+          plt.close(fig)
+          buffer.seek(0)
+          img_str = base64.b64encode(buffer.read()).decode('utf-8')
+          print(img_str) #comment if not neccesary
+          return img_str
+        except Exception as e:
+            print(f"{e}")
+
+    def generate_cirq_histogram(cirq_result):
+        hist = cirq.plot_state_histogram(cirq_result)
+        buffer = io.BytesIO()
+        hist.figure.savefig(buffer,format="png")
+        plt.close(hist.figure)
+        buffer.seek(0)
+        img_str = base64.b64encode(buffer.read()).decode("utf-8")
+        return img_str
 
 #Example Usage   
 if __name__ == "__main__":
@@ -92,4 +118,4 @@ if __name__ == "__main__":
     qc.measure_all()
     """
 
-    print(simulator.qiskit_code_simulate(qiskit_codes_2))
+    print(simulator.qiskit_code_simulate(qiskit_codes))

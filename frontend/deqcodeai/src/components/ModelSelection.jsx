@@ -24,7 +24,6 @@ import {
   Code2, 
   Binary,
   BookOpen,
-  Github,
   Globe,
   Coffee,
   Award

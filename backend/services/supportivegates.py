@@ -83,7 +83,6 @@ json_structured_ouput = """ {{"Parameters":[{{0:{parameters[0]}1:{parameters[1]}
     "qc.h(0)\n",
     "qc.ry(1.57, 1)\n",  
     "\n"
-    "print(qc.draw())\n"
      ],"explanation":"This contains the explanation of the code and circuit"}}"""
 class ElementsRequired:
     def __init__(self):
