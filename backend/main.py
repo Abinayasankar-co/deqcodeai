@@ -10,11 +10,12 @@ from fastapi.exceptions import HTTPException
 from fastapi.templating import Jinja2Templates
 from db.db_handler import dbhandles
 from db.datahandler import QuibitsGeneratorinput,DeqcodeUser,DeqcodeUserLogin,CodeRequest , UserQuery
-from db.datahandler import PreviousCircuits,CircuitViewer,PricingPlan,DeqcodeLoginCredentials
+from db.datahandler import PreviousCircuits,CircuitViewer,PricingPlan,DeqcodeLoginCredentials,CircuitInput
 from services.quirk_circuit_generator import QuantumLLM
 from services.simulation import QuantumSimulator
 from services.algassertprod import QuantumCircuitGenerator
 from services.util import create_session_token , remove_code
+from services.ErrorCorrectioncodes import QuantumErrorMitigator
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 from dotenv import load_dotenv
@@ -159,6 +160,22 @@ async def simulate_code(request: CodeRequest):
         raise HTTPException(status_code=400, detail=str(e))
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
+
+@app.post("/mitigate")
+async def mitigate_circuit(input: CircuitInput):
+    circuit = input.circuit
+    mitigator = QuantumErrorMitigator(circuit, input.backend_type, input.noise_level)
+    results = mitigator.get_results()
+    return {
+        "status": "success",
+        "circuit": str(circuit),
+        "circuit_id": mitigator.circuit_id,
+        "results": {
+            "ideal_expectation": round(results["ideal"], 4),
+            "raw_expectation": round(results["raw"], 4),
+            "mitigated_expectation": round(results["mitigated"], 4)
+        }
+    }
     
 @app.post("/query")
 async def query(querymsg : UserQuery):

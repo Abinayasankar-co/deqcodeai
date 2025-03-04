@@ -50,3 +50,9 @@ class UserQuery(BaseModel):
     username :str = Form(...)
     querymsg :str = Form(...)
     imgdata : Optional[UploadFile] = None
+
+class CircuitInput(BaseModel):
+    circuit : str
+    backend_type: str
+    noise_level: float = 0.01
+
