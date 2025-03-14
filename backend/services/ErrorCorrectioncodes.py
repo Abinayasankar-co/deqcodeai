@@ -9,6 +9,7 @@ from mitiq.interface import convert_to_mitiq
 from mitiq.pec.representations.depolarizing import represent_operation_with_local_depolarizing_noise
 from pydantic import BaseModel
 import logging
+import math
 import hashlib
 
 # Configure logging for production use
@@ -73,6 +74,7 @@ class QuantumErrorMitigator:
         if non_clifford_count == 0:
             return cdr.execute_with_cdr
         elif non_clifford_count <= 2:
+            print(f"We are using PEC - {non_clifford_count}")
             return pec.execute_with_pec
         return zne.execute_with_zne
 
@@ -200,13 +202,21 @@ class CircuitInput(BaseModel):
 
 def create_cirq_circuit() -> cirq.Circuit:
     q0, q1 = cirq.LineQubit.range(2)
-    return cirq.Circuit(cirq.H(q0), cirq.T(q0), cirq.CNOT(q0, q1))
+    return cirq.Circuit(cirq.H(q0), cirq.T(q0), cirq.CNOT(q0, q1)) 
 
 def create_qiskit_circuit() -> QuantumCircuit:
-    qc = QuantumCircuit(2)
+    import math
+    qc = QuantumCircuit(5)
     qc.h(0)
-    qc.t(0)
-    qc.cx(0, 1)
+    qc.h(1)
+    qc.h(2)
+    qc.h(3)
+    qc.h(4)
+    qc.z(0, math.pi)
+    qc.z(1, math.pi)
+    qc.z(2, math.pi)
+    qc.z(3, math.pi)
+    qc.z(4, math.pi)
     return qc
 
 if __name__ == "__main__":
@@ -214,4 +224,5 @@ if __name__ == "__main__":
         circuit = create_cirq_circuit() if backend == 'cirq' else create_qiskit_circuit()
         mitigator = QuantumErrorMitigator(circuit, backend)
         results = mitigator.get_results()
-        print(f"{backend.capitalize()} Results:", {k: round(v, 4) for k, v in results.items()})
+        print(f"{backend.capitalize()} Results - {results}")
+        #print(f"{backend.capitalize()} Results:", {k: round(v, 4) for k, v in results.items()})

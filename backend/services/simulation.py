@@ -18,7 +18,8 @@ class QuantumSimulator:
             compiled_circuit = transpile(qc, simulator)
             result = simulator.run(compiled_circuit).result()
             counts = result.get_counts()
-            return f"Qiskit simulation result: {counts}"
+            print(f"Qiskit simulation result: {counts}")
+            return counts
         except Exception as e:
             return f"Qiskit Simulation Error: {e}"
 
@@ -57,6 +58,7 @@ class QuantumSimulator:
         plt.close(hist.figure)
         buffer.seek(0)
         img_str = base64.b64encode(buffer.read()).decode("utf-8")
+        print(img_str)
         return img_str
 
 #Example Usage   

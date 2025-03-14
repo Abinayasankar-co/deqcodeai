@@ -1,6 +1,13 @@
-qiskit-aer
 fastapi
 python-dotenv
-qiskit
 qiskit-terra
 bloom-filter2
+cirq==1.4.1
+pandas==2.2.2
+qiskit==1.3.2
+qiskit-aer==0.16.1
+mitiq==0.43.0
+boto3==1.34.2  
+dwave-ocean-sdk==6.0.0  
+
+

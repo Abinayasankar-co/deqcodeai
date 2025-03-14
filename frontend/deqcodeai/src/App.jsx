@@ -9,6 +9,9 @@ import Login from './components/login'
 import { AuthProvider, useAuth } from './AuthContext';
 import FrameworkSelector from './components/ModelSelection';
 import Circuit from './components/Circuit';
+import PricingSection from './components/pricing';
+import Dashboard from './components/Dashboard';
+
 
 const ProtectedRoute = ({ children }) => {
   const navigate = useNavigate();
@@ -35,9 +38,12 @@ function App() {
       <Route path='/registration_error' element={<RegistrationError/>}/>
       <Route path='/error' element={<OtherError/>}/>
       <Route path='/canthandle' element={<NotFound404/>}/>
-      <Route path='/login' element={<Login/>}/>
+      <Route path='/login' element={<Login />}/>
+      <Route path='/dashboard' element={<Dashboard/>}/>
       <Route path="*" element={<Login/>}/> {/*The Landing page is to be redirected*/}
+      <Route path="/pricing" element={<PricingSection/>}/>
       <Route path='/selection' element={<FrameworkSelector/>}/>
+      <Route path='/dashboard' element={<Dashboard/>}/>
       <Route path="/circuit" element={<Circuit/>}/>{/*The Circuit is formed but for trail version*/}
      </Routes>
      </AuthProvider>
