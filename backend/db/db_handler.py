@@ -121,6 +121,13 @@ class dbhandles:
 
         async def releasing_circuit_info(self): #Deleted Circuits
             pass
+
+        async def apply_credits(self,applycredits):
+            try:
+                pass
+            except Exception as e:
+                raise HTTPException(f"{e}")
+    
   
 
 

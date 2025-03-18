@@ -11,6 +11,8 @@ import FrameworkSelector from './components/ModelSelection';
 import Circuit from './components/Circuit';
 import PricingSection from './components/pricing';
 import Dashboard from './components/Dashboard';
+import Analytics from './components/Analytics'
+import { ApplyCredits } from './components/Applyingcredits'
 
 
 const ProtectedRoute = ({ children }) => {
@@ -44,6 +46,8 @@ function App() {
       <Route path="/pricing" element={<PricingSection/>}/>
       <Route path='/selection' element={<FrameworkSelector/>}/>
       <Route path='/dashboard' element={<Dashboard/>}/>
+      <Route path='/analytics' element={<Analytics/>}/>
+      <Route path="/applycredits" element={<ApplyCredits/>}/>
       <Route path="/circuit" element={<Circuit/>}/>{/*The Circuit is formed but for trail version*/}
      </Routes>
      </AuthProvider>

@@ -149,6 +149,7 @@ async def simulate_code(request: CodeRequest):
             print(result) #comment if not neccesary
             result_map = simulator.generate_qiskit_histogram(json.loads(result))
             #print(result_map) #comment if not neccesary
+            print({"result": result,"resultmap":result_map}) #Remove During Production
             return {"result": result,"resultmap":result_map}
         elif request.simulator == "cirq":
             result = simulator.cirq_code_simulate(request.code)
@@ -203,6 +204,49 @@ async def query(querymsg : UserQuery):
 
     except Exception as e:
         raise HTTPException(status_code=500,detail=f"The Mail have not been sent but the issue is Still in Progress to Resolve")
+
+@app.post("/enterprise/details")
+async def details():
+    try:
+        pass
+    except Exception as e:
+        print(f"{e}")
+
+@app.post("/enterprise/members")
+async def members():
+    try:
+        pass
+    except Exception as e:
+        print(f"{e}")
+
+@app.post("/enterprise/shared-data")
+async def shareddata():
+    try:
+        pass
+
+    except Exception as e:
+        print(f"{e}")
+
+@app.post("/enterprise/circuits")
+async def enterprisecircuits():
+    try:
+        pass
+    except Exception as e:
+        print(f"{e}")
+
+@app.post("/checkbilling")
+async def checkbill():
+    try:
+        pass
+    except Exception as e:
+        print(f"{e}")
+
+@app.post("/tranfercircuit")
+async def transfercircuit():
+    try:
+        pass
+    except Exception as e:
+        print(f'{e}')
 
 #Testing not a valid circuit api for production - caution : Don't use in documentation
 @app.post("/generate_circuit")
